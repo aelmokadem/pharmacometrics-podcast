@@ -33,6 +33,15 @@ website:
     right:
       - text: Main podcast website
         href: https://aelmokadem.me
+      - text: Spotify
+        icon: spotify
+        href: https://open.spotify.com/show/54G0iCxWVSVeMsulbSlyr5
+      - text: YouTube
+        icon: youtube
+        href: https://youtube.com/@pharmacometricspodcast
+      - text: Apple Podcasts
+        icon: apple
+        href: https://podcasts.apple.com/us/podcast/the-pharmacometrics-podcast/id6832096373
 
 format:
   html:
