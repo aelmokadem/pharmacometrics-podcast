@@ -60,7 +60,7 @@ Develop practical workflows for numerical methods, simulation, and reproducible 
 
 ## About the podcast
 
-*The Pharmacometrics Podcast* explores pharmacometrics and the computational methods behind model-informed drug development. Visit [the main podcast website](https://aelmokadem.me) for episodes, descriptions, and listening links.
+*The Pharmacometrics Podcast* explores pharmacometrics and the computational methods behind model-informed drug development. Visit [the main podcast website](https://aelmokadem.me/Podcasts/) for episodes, descriptions, and listening links.
 
 ::: {.podcast-links aria-label="Listen to or watch the podcast"}
 <a class="btn btn-outline-primary" href="https://open.spotify.com/show/54G0iCxWVSVeMsulbSlyr5"><i class="bi bi-spotify" aria-hidden="true"></i> Spotify</a>

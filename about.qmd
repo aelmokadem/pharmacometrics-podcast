@@ -10,6 +10,6 @@ Through computational modeling and simulation, the notebooks explore how pharmac
 
 Some notebooks expand on podcast discussions; others are independent tutorials. You can use every resource without listening to an episode first. Where a specific episode is relevant, a notebook may link to it.
 
-The [main podcast website](https://aelmokadem.me) hosts episode pages and listening links. This companion focuses on the technical material: intuition, equations, implementations, and analysis.
+The [main podcast website](https://aelmokadem.me/Podcasts/) hosts episode pages and listening links. This companion focuses on the technical material: intuition, equations, implementations, and analysis.
 
 The source is available in the [GitHub repository](https://github.com/aelmokadem/pharmacometrics-podcast). Notebooks identify the language and dependencies needed to reproduce their computational results.
