@@ -6,6 +6,7 @@ toc: false
 ---
 
 ::: {.hero}
+:::: {.hero-copy}
 ::: {.companion-label}
 Technical Companion
 :::
@@ -19,6 +20,11 @@ Technical Companion
 Technical notebooks, mathematical explanations, simulations, and reproducible code exploring pharmacometrics and model-informed drug development. Build intuition, work through the equations, and run the models yourself.
 
 [Explore technical resources](resources.qmd){.btn .btn-primary .mt-2}
+::::
+
+::: {.hero-artwork}
+<img class="podcast-cover" src="images/pharmacometrics_podcast_cover.png" width="618" height="621" alt="The Pharmacometrics Podcast cover, with Ahmed Elmokadem, featuring a cyan wave on a navy background.">
+:::
 :::
 
 Some resources accompany episodes of *The Pharmacometrics Podcast*; others are standalone educational tutorials. Every notebook is written to be useful on its own, whether you are discovering a concept or revisiting its implementation.

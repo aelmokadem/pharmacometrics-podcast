@@ -9,6 +9,7 @@ project:
 
 website:
   title: "The Pharmacometrics Podcast"
+  favicon: images/favicon.svg
   description: "Technical Companion — educational notebooks, mathematics, and reproducible code for pharmacometrics."
   site-url: https://aelmokadem.github.io/pharmacometrics-podcast/
   repo-url: https://github.com/aelmokadem/pharmacometrics-podcast

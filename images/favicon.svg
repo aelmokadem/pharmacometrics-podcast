@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <title>The Pharmacometrics Podcast</title>
+  <rect width="64" height="64" rx="12" fill="#031d38"/>
+  <path fill="#fff" d="M20 12h14c10 0 16 5 16 14s-6 14-16 14h-6v10h-8zm8 8v12h6c5 0 8-2 8-6s-3-6-8-6z"/>
+  <path d="M8 52c8-12 16-12 24-4s16 8 24-4" fill="none" stroke="#16d7eb" stroke-width="5" stroke-linecap="round"/>
+</svg>
