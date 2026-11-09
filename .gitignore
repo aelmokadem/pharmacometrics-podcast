@@ -1,0 +1,13 @@
+/_site/
+/.quarto/
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user/
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+*_files/
+# _freeze/ is intentionally versioned: deployment uses its computed results.
+
+**/*.quarto_ipynb

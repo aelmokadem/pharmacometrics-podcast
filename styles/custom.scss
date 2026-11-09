@@ -1,0 +1,39 @@
+/*-- scss:defaults --*/
+$font-family-sans-serif: system-ui, -apple-system, "Segoe UI", sans-serif;
+$font-size-base: 1.05rem;
+$line-height-base: 1.7;
+$navbar-padding-y: 0.85rem;
+
+/*-- scss:rules --*/
+.navbar-brand {
+  font-size: 1rem;
+  font-weight: 650;
+  white-space: normal;
+  max-width: 22rem;
+}
+
+h1, h2, h3 { letter-spacing: -0.025em; }
+h2 { margin-top: 2.5rem; }
+.subtitle, .companion-label { color: var(--bs-secondary-color); }
+.companion-label {
+  font-size: 0.85rem;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.75rem;
+}
+.hero { padding: 1.5rem 0 2rem; border-bottom: 1px solid var(--bs-border-color); }
+.hero h1 { max-width: 19ch; font-size: clamp(2.2rem, 5vw, 3.7rem); line-height: 1.12; }
+.hero .lead { max-width: 48ch; margin: 1.5rem 0; }
+.topic { border-top: 1px solid var(--bs-border-color); padding-top: 1rem; margin-top: 1rem; }
+.topic h3 { font-size: 1.2rem; margin-top: 0; }
+a { text-underline-offset: 0.2em; }
+a:focus-visible, button:focus-visible { outline: 3px solid var(--bs-primary); outline-offset: 4px; }
+pre.sourceCode { border: 1px solid var(--bs-border-color); border-radius: 0.35rem; }
+.quarto-listing-table { font-size: 0.95rem; }
+.nav-footer { border-top: 1px solid var(--bs-border-color); }
+@media (max-width: 767px) {
+  .hero { padding-top: 0.5rem; }
+  .navbar-brand { max-width: 70vw; }
+  .quarto-listing { overflow-x: auto; }
+}

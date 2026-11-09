@@ -1,0 +1,55 @@
+project:
+  type: website
+  output-dir: _site
+  render:
+    - index.qmd
+    - resources.qmd
+    - about.qmd
+    - notebooks/**/*.qmd
+
+website:
+  title: "The Pharmacometrics Podcast"
+  description: "Technical Companion — educational notebooks, mathematics, and reproducible code for pharmacometrics."
+  site-url: https://aelmokadem.github.io/pharmacometrics-podcast/
+  repo-url: https://github.com/aelmokadem/pharmacometrics-podcast
+  search: true
+  navbar:
+    title: "The Pharmacometrics Podcast"
+    left:
+      - href: index.qmd
+        text: Home
+      - href: resources.qmd
+        text: Technical Resources
+      - href: about.qmd
+        text: About
+    right:
+      - href: https://aelmokadem.me
+        text: Podcast
+      - href: https://github.com/aelmokadem/pharmacometrics-podcast
+        icon: github
+        aria-label: GitHub repository
+  page-footer:
+    left: "The Pharmacometrics Podcast · Technical Companion"
+    right:
+      - text: Main podcast website
+        href: https://aelmokadem.me
+
+format:
+  html:
+    theme:
+      light: [cosmo, styles/custom.scss]
+      dark: [darkly, styles/custom.scss]
+    toc: true
+    toc-depth: 3
+    code-copy: true
+    code-overflow: wrap
+    highlight-style: github
+    html-math-method: mathjax
+    link-external-newwindow: false
+    smooth-scroll: false
+    lang: en
+
+execute:
+  freeze: auto
+  echo: true
+  error: false

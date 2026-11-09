@@ -1,0 +1,49 @@
+---
+title: "Technical Resources"
+description: "Explore technical notebooks by scientific topic, with mathematics, simulations, and reproducible code."
+toc: false
+listing:
+  id: notebooks
+  contents: notebooks/**/*.qmd
+  type: table
+  fields: [title, description, categories, programming-language]
+  field-display-names:
+    categories: Scientific topic
+    programming-language: Language
+  sort: title
+  categories: true
+  filter-ui: true
+  sort-ui: false
+  max-description-length: 220
+---
+
+Browse educational notebooks by scientific topic. Some accompany podcast episodes; others explore independent questions. Each resource includes its own background and code dependencies.
+
+## Published notebooks
+
+Use the topic filters or search the table to find a resource.
+
+::: {#notebooks}
+:::
+
+## Topic guide
+
+### PK/PD Modeling {#pkpd}
+
+Models of drug exposure and response, from compartmental kinetics to pharmacodynamic relationships. Start with the [one-compartment intravenous bolus notebook](notebooks/pkpd/one-compartment-pk.qmd).
+
+### Population Pharmacokinetics {#poppk}
+
+Population models, between-individual variability, covariates, and parameter estimation. No notebooks published in this topic yet.
+
+### PBPK Modeling {#pbpk}
+
+Physiologically based descriptions of absorption, distribution, metabolism, and excretion. No notebooks published in this topic yet.
+
+### Quantitative Systems Pharmacology {#qsp}
+
+Mechanistic models linking biological pathways, drug effects, and disease dynamics. No notebooks published in this topic yet.
+
+### Simulation & Computational Tools {#simulation}
+
+Numerical methods, simulation design, and reproducible workflows in R, Julia, and Python. No notebooks published in this topic yet.

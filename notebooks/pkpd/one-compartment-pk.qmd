@@ -1,0 +1,144 @@
+---
+title: "Simulating a One-Compartment Pharmacokinetic Model"
+description: "Derive and simulate an intravenous bolus concentration–time profile using an analytical solution and base R."
+categories: [PK/PD Modeling]
+programming-language: R
+engine: knitr
+---
+
+## Why start with one compartment?
+
+Imagine a drug entering a well-mixed space immediately after an intravenous (IV) bolus dose. Drug leaves this space over time, so its concentration falls. A one-compartment model turns this intuition into a simple relationship between dose, distribution, and elimination.
+
+Here we simulate the analytical solution with **base R**. No specialized pharmacometrics packages are needed. Rendering executable R code in Quarto requires R, `knitr`, and `rmarkdown`; the model itself uses only base R and its standard graphics tools.
+
+All parameter values are **hypothetical**, chosen for illustration. They do not describe a particular drug or provide dosing guidance.
+
+## Learning objectives
+
+- Relate dose, volume of distribution, clearance, and elimination rate.
+- Write the mass-balance equation for a one-compartment IV bolus model.
+- Simulate and interpret a concentration–time profile.
+
+## Model assumptions
+
+- A single dose enters the systemic circulation instantaneously, with complete availability.
+- Mixing and distribution within the modeled compartment are instantaneous.
+- Volume of distribution and clearance are constant over time.
+- Elimination is first order: the elimination rate is proportional to the amount present.
+- There is no additional drug input, baseline drug, or measurement error.
+
+The compartment is a mathematical representation, not necessarily an anatomical space. The apparent volume of distribution relates the amount in the body to the modeled concentration; it need not equal a physical fluid volume.
+
+## Parameters and mathematical formulation
+
+| Symbol | Meaning | Illustrative value | Units |
+|:--|:--|--:|:--|
+| $D$ | IV bolus dose | 100 | mg |
+| $V$ | Apparent volume of distribution | 20 | L |
+| $CL$ | Clearance | 2 | L/h |
+| $k = CL/V$ | Elimination rate constant | 0.1 | h$^{-1}$ |
+
+Let $A(t)$ be the amount of drug in the compartment (mg), and $C(t) = A(t)/V$ its concentration (mg/L). For time $t \geq 0$ after the bolus, mass balance gives
+
+$$
+\frac{dA(t)}{dt} = -CL\,C(t) = -\frac{CL}{V}A(t) = -kA(t),
+\qquad A(0^+) = D.
+$$
+
+Here $0^+$ means immediately after dosing. With constant $V$, the equivalent concentration equation is
+
+$$
+\frac{dC(t)}{dt} = -kC(t), \qquad C(0^+) = \frac{D}{V}.
+$$
+
+Solving the equation yields the exponential decline
+
+$$
+A(t) = D e^{-kt}, \qquad
+C(t) = \frac{D}{V}e^{-(CL/V)t}.
+$$
+
+Clearance has units of volume per time; it is not itself an amount removed per time. Multiplying $CL$ by $C(t)$ gives the elimination rate in mg/h. The half-life is
+
+$$
+t_{1/2} = \frac{\ln 2}{k} = \frac{\ln 2\,V}{CL}.
+$$
+
+## Implement and simulate in R
+
+Evaluate the analytical solution on a time grid from 0 to 48 hours. This does not require a numerical differential equation solver.
+
+```{r}
+# Hypothetical parameters; use consistent units throughout.
+dose_mg <- 100
+volume_l <- 20
+clearance_l_h <- 2
+
+k_h <- clearance_l_h / volume_l
+half_life_h <- log(2) / k_h
+
+# Include time zero: concentration immediately after the bolus.
+time_h <- seq(0, 48, by = 0.25)
+concentration_mg_l <- (dose_mg / volume_l) * exp(-k_h * time_h)
+
+profile <- data.frame(time_h, concentration_mg_l)
+
+# Check the initial condition and the defining half-life relationship.
+stopifnot(
+  all.equal(profile$concentration_mg_l[1], dose_mg / volume_l),
+  all.equal((dose_mg / volume_l) * exp(-k_h * half_life_h),
+            (dose_mg / volume_l) / 2),
+  all(diff(profile$concentration_mg_l) < 0)
+)
+
+data.frame(
+  initial_concentration_mg_l = dose_mg / volume_l,
+  elimination_rate_constant_per_h = k_h,
+  half_life_h = round(half_life_h, 2),
+  concentration_at_24_h_mg_l = round((dose_mg / volume_l) * exp(-k_h * 24), 3)
+)
+```
+
+## Concentration–time profile
+
+```{r}
+#| label: fig-concentration
+#| fig-cap: "Hypothetical one-compartment IV bolus profile: 100 mg dose, 20 L volume, and 2 L/h clearance. The marked point is one elimination half-life after dosing."
+#| fig-alt: "Concentration falls exponentially from 5 mg per liter immediately after dosing toward zero over 48 hours, reaching 2.5 mg per liter at about 6.93 hours."
+#| fig-width: 7
+#| fig-height: 4.5
+# A white plotting surface keeps the figure readable in both site themes.
+par(bg = "white", fg = "#243746", col.axis = "#243746",
+    col.lab = "#243746", mar = c(4.5, 4.5, 1, 1))
+plot(
+  profile$time_h, profile$concentration_mg_l,
+  type = "l", lwd = 2.5, col = "#176b82",
+  xlab = "Time after dose (h)", ylab = "Concentration (mg/L)",
+  ylim = c(0, dose_mg / volume_l), las = 1, bty = "l"
+)
+points(half_life_h, (dose_mg / volume_l) / 2,
+       pch = 19, col = "#243746")
+text(half_life_h, (dose_mg / volume_l) / 2,
+     labels = "One half-life", pos = 4, cex = 0.85)
+```
+
+## Interpret the results
+
+The initial concentration is 5 mg/L: the 100 mg dose divided by the 20 L volume. With $k = 0.1\ \mathrm{h}^{-1}$, the half-life is approximately 6.93 hours. The concentration halves over each successive half-life, reaching approximately 0.454 mg/L at 24 hours.
+
+The decline is curved on a linear concentration axis because a constant *fraction* of the remaining drug is eliminated per unit time. On a logarithmic concentration axis, this single exponential would be a straight line.
+
+At fixed volume, increasing clearance makes the decline steeper and shortens the half-life. At fixed clearance, increasing volume lowers the initial concentration and lengthens the half-life. Dose scales concentration proportionally under these linear model assumptions.
+
+## Limitations and key takeaways
+
+This model omits absorption, infusion duration, distribution phases, changing physiology, nonlinear elimination, and variability between people or observations. A measured concentration–time profile may require a more detailed model; a one-compartment description should be assessed against the scientific question and data.
+
+The central relationship is simple: dose and volume set the initial concentration, while the ratio of clearance to volume sets the rate of exponential decline. This provides a useful starting point for understanding more complex pharmacokinetic models.
+
+## Further exploration
+
+Try changing one parameter at a time. Double the dose, double clearance, or double volume, and explain each new profile using the equations before rerunning the code. The derivation above is self-contained and requires no external dataset.
+
+For another implementation of the same mass-balance model, see the National Simulation Resource's [PKComp1Decay model documentation](https://www.imagwiki.nibib.nih.gov/physiome/jsim/models/webmodel/NSR/pkcomp1decay), hosted by the NIH Interagency Modeling and Analysis Group.

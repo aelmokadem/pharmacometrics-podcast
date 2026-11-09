@@ -1,0 +1,15 @@
+---
+title: "About"
+subtitle: "Technical Companion"
+toc: false
+---
+
+This is the technical companion to *The Pharmacometrics Podcast*: a home for educational notebooks, mathematical explanations, and reproducible code.
+
+Through computational modeling and simulation, the notebooks explore how pharmacometric models work, what their assumptions mean, and how to interpret their results. Topics include PK/PD, population pharmacokinetics, PBPK, quantitative systems pharmacology, and model-informed drug development.
+
+Some notebooks expand on podcast discussions; others are independent tutorials. You can use every resource without listening to an episode first. Where a specific episode is relevant, a notebook may link to it.
+
+The [main podcast website](https://aelmokadem.me) hosts episode pages and listening links. This companion focuses on the technical material: intuition, equations, implementations, and analysis.
+
+The source is available in the [GitHub repository](https://github.com/aelmokadem/pharmacometrics-podcast). Notebooks identify the language and dependencies needed to reproduce their computational results.
