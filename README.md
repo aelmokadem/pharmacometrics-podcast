@@ -20,6 +20,10 @@ notebooks/
 data/                        Small, shareable notebook datasets
 images/                      Images and future podcast artwork
 styles/custom.scss           Minimal Bootstrap theme customization
+.Rprofile, renv.lock, renv/   R project activation and package lock
+pyproject.toml, uv.lock      Python project and package lock
+.python-version              Python interpreter pin
+Project.toml, Manifest.toml  Julia project and package lock
 _freeze/                     Computational results and figures; must be committed
 .github/workflows/publish.yml GitHub Pages build and deployment
 ```
@@ -30,11 +34,13 @@ _freeze/                     Computational results and figures; must be committe
 
 Install [Quarto CLI](https://quarto.org/docs/get-started/) using its installer for your operating system. The workflow pins **Quarto 1.8.24**; use that version locally for matching rendering behavior. No Node or frontend package installation is needed.
 
-For the initial executable notebook, install R and its Quarto rendering packages:
+For the initial executable notebook, install R 4.5.3 and restore the project library from the repository root:
 
-```r
-install.packages(c("knitr", "rmarkdown"))
+```sh
+Rscript -e 'renv::restore(prompt = FALSE)'
 ```
+
+The project `.Rprofile` activates renv and bootstraps its locked version if needed. The lockfile includes `knitr`, `rmarkdown`, and their dependencies. See the language environment instructions below for Python and Julia.
 
 The simulation uses base R and standard graphics only. Initial outputs were generated with R 4.5.3. To check your installation and preview from the repository root:
 
@@ -97,19 +103,72 @@ State runtime and package requirements in the notebook, identify hypothetical in
 
 Internal links should use relative `.qmd` paths. Add shareable data to `data/` and refer to it relative to the notebook's directory (for example `../../data/example.csv`). Execute each new notebook locally and render the whole project before publication.
 
-### R, Python, and Julia
+### R, Python, and Julia environments
 
-Each notebook needs only its own language:
+Each language has one shared environment at the repository root. Set up only the languages you use. Lockfiles record package versions; installed libraries, virtual environments, and machine-specific kernels are not committed. These files manage packages, not system libraries or Quarto itself.
 
-| Language | Front matter | Local execution requirements |
-|---|---|---|
-| R | `engine: knitr`, `programming-language: R` | R, knitr, rmarkdown, and packages used by that notebook; use executable `{r}` chunks |
-| Python | `jupyter: python3`, `programming-language: Python` (omit `engine: knitr`) | Python, Jupyter, ipykernel, and the notebook's packages; use `{python}` chunks |
-| Julia | `jupyter: julia-1.x`, `programming-language: Julia` (omit `engine: knitr`) | Julia, IJulia, Jupyter, and the notebook's packages; use `{julia}` chunks and replace `julia-1.x` with the installed kernel name |
+| Language | Runtime used to initialize | Committed environment files | Notebook front matter |
+|---|---|---|---|
+| R | 4.5.3 (recorded in `renv.lock`) | `.Rprofile`, `renv.lock`, `renv/activate.R`, `renv/settings.json`, `renv/.gitignore` | `engine: knitr`, `programming-language: R`; use `{r}` chunks |
+| Python | 3.13.12 (pinned in `.python-version`) | `pyproject.toml`, `uv.lock`, `.python-version` | `jupyter: python3`, `programming-language: Python`; use `{python}` chunks |
+| Julia | 1.12.4 (recorded in `Manifest.toml`, project accepts 1.12.x) | `Project.toml`, `Manifest.toml` | `jupyter: pharmacometrics-julia`, `programming-language: Julia`; use `{julia}` chunks |
 
-For Python, an optional local environment can be created with `python3 -m venv .venv`, activated, then populated with `python -m pip install jupyter ipykernel`. Select that environment through Quarto's `QUARTO_PYTHON` setting if necessary. For Julia, install IJulia using `import Pkg; Pkg.add("IJulia")`; find available kernel names with `jupyter kernelspec list`. See the official [Python](https://quarto.org/docs/computations/python.html) and [Julia](https://quarto.org/docs/computations/julia.html) guides for runtime setup.
+For Python and Julia notebooks, omit `engine: knitr`. Keep each notebook's scientific dependencies documented in its introduction. Start all commands below at the repository root.
 
-Document exact versions when an analysis needs them. Introduce language-specific environment files only when real notebook dependencies justify them. GitHub Actions installs none of these language environments; it relies on the committed frozen results.
+#### R with renv
+
+```sh
+# Restore the locked package library after cloning or pulling changes.
+Rscript -e 'renv::restore(prompt = FALSE)'
+# Check that the library and lockfile agree.
+Rscript -e 'renv::status()'
+# Execute using the activated project library.
+quarto render notebooks/pkpd/one-compartment-pk.qmd
+```
+
+In an R session started at the project root, add a needed package with `renv::install("package-name")`, then run `renv::snapshot()`. This project uses snapshot type `all` to record the project library, including rendering tools that are not explicitly imported by notebook code. Install only project dependencies there. Use `renv::update("package-name")` for an intentional upgrade, snapshot, and rerun affected notebooks. Restore and inspect changes rather than automatically upgrading when opening the project. renv records the R version but does not install R itself.
+
+#### Python with uv
+
+Install [uv](https://docs.astral.sh/uv/getting-started/installation/), then:
+
+```sh
+# Restore exactly the committed lockfile; uv can install the pinned Python.
+uv sync --locked
+# Check the interpreter and available notebook kernels.
+uv run --locked python --version
+uv run --locked jupyter kernelspec list
+# Execute a future Python notebook (replace the path with a real notebook).
+uv run --locked quarto render notebooks/simulation/your-python-notebook.qmd
+```
+
+`uv run` puts the project `.venv` on PATH; Quarto detects that environment. If your editor selects a different Python, select `.venv` or set `QUARTO_PYTHON` to its Python executable for that session. Jupyter and ipykernel are included; no scientific packages have been added yet.
+
+Add dependencies with `uv add package-name`, remove them with `uv remove package-name`, and intentionally upgrade one with `uv lock --upgrade-package package-name` followed by `uv sync --locked`. Commit `pyproject.toml` and `uv.lock` together. Changing the Python minor version also requires updating `requires-python`, the interpreter pin, and the lockfile.
+
+#### Julia with Pkg
+
+Install Julia 1.12.4, matching the manifest. If using juliaup, `juliaup add 1.12.4` installs it; use `julia +1.12.4` in place of `julia` below if it is not your default. This machine already had Julia installed under `~/.juliaup/bin`; add that directory to PATH if your shell cannot find it.
+
+First run `uv sync --locked` to provide Jupyter. Then, on macOS/Linux:
+
+```sh
+# Restore the Julia packages, using the uv-managed Jupyter installation.
+JUPYTER="$PWD/.venv/bin/jupyter" julia --project=. -e 'using Pkg; Pkg.instantiate()'
+# Install a local kernelspec whose Julia process always activates this project.
+JUPYTER_DATA_DIR="$PWD/.venv/share/jupyter" julia --project=. -e 'using IJulia; IJulia.installkernel("Julia (Pharmacometrics Podcast)", "--project=" * pwd(); specname="pharmacometrics-julia")'
+uv run --locked jupyter kernelspec list
+# Execute a future Julia notebook (replace the path with a real notebook).
+uv run --locked quarto render notebooks/simulation/your-julia-notebook.qmd
+```
+
+The kernelspec lives inside the ignored `.venv`; regenerate it after moving the checkout, recreating `.venv`, or changing the Julia executable. Its absolute project path is local metadata and is never committed. On Windows, use the corresponding `.venv/Scripts` executables and PowerShell environment-variable syntax.
+
+Add a needed package with `julia --project=. -e 'using Pkg; Pkg.add("PackageName")'`. Use `Pkg.rm("PackageName")` to remove one and `Pkg.update("PackageName")` for an intentional upgrade. Pkg updates `Project.toml` and `Manifest.toml`; commit both. Use `Pkg.instantiate()` after pulling changes to restore the recorded versions. IJulia is the only direct dependency so far.
+
+For all languages, rerun affected notebooks after package or runtime changes, review results, and include updated `_freeze/` outputs with the environment files. The freeze hash tracks notebook source, so changing a lockfile alone does **not** force computational results to refresh. GitHub Actions continues to install none of these language environments and relies on committed frozen results.
+
+See the official [renv](https://rstudio.github.io/renv/articles/renv.html), [uv project](https://docs.astral.sh/uv/guides/projects/), [Pkg environment](https://pkgdocs.julialang.org/v1/environments/), and [IJulia kernel](https://ijulia.org/stable/manual/installation/#Installing-and-customizing-kernels) guides.
 
 ## GitHub Pages
 
