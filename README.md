@@ -2,7 +2,7 @@
 
 Explore the models, mathematics, and code behind pharmacometrics. This repository contains educational notebooks and simulations on PK/PD, population pharmacokinetics, PBPK, quantitative systems pharmacology, and computational tools.
 
-**[Read the technical companion](https://aelmokadem.github.io/pharmacometrics-podcast/)** · **[Browse notebooks](https://aelmokadem.github.io/pharmacometrics-podcast/resources.html)** · **[Podcast episodes and show notes](https://aelmokadem.me/Podcasts/)**
+**[Read the technical companion](https://aelmokadem.github.io/pharmacometrics-podcast/)** · **[Browse notebooks](https://aelmokadem.github.io/pharmacometrics-podcast/resources.html)** · **[Podcast episodes and show notes](https://aelmokadem.me/podcasts/pharmacometrics-podcast/)**
 
 Some notebooks accompany podcast episodes; others are standalone tutorials. You can use any notebook without listening to an episode first.
 

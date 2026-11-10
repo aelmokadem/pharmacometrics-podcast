@@ -24,7 +24,7 @@ website:
       - href: about.qmd
         text: About
     right:
-      - href: https://aelmokadem.me/Podcasts/
+      - href: https://aelmokadem.me/podcasts/pharmacometrics-podcast/
         text: Podcast
       - href: https://github.com/aelmokadem/pharmacometrics-podcast
         icon: github
@@ -33,7 +33,7 @@ website:
     left: "The Pharmacometrics Podcast · Technical Companion"
     right:
       - text: Main podcast website
-        href: https://aelmokadem.me/Podcasts/
+        href: https://aelmokadem.me/podcasts/pharmacometrics-podcast/
       - text: Spotify
         icon: spotify
         href: https://open.spotify.com/show/54G0iCxWVSVeMsulbSlyr5
