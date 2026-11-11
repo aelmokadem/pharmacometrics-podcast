@@ -13,3 +13,7 @@ Some notebooks expand on podcast discussions; others are independent tutorials. 
 The [main podcast website](https://aelmokadem.me/podcasts/pharmacometrics-podcast/) hosts episode pages and listening links. This companion focuses on the technical material: intuition, equations, implementations, and analysis.
 
 The source is available in the [GitHub repository](https://github.com/aelmokadem/pharmacometrics-podcast). Notebooks identify the language and dependencies needed to reproduce their computational results.
+
+## Contact
+
+For questions, topic suggestions, or collaboration inquiries, email Ahmed Elmokadem at [podcast@aequantitative.com](mailto:podcast@aequantitative.com) or connect on [LinkedIn](https://www.linkedin.com/in/ahmed-elmokadem-87b01875/).

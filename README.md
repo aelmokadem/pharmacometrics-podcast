@@ -55,4 +55,6 @@ Lockfiles record package versions to help reproduce the results. For Python and 
 
 Found an error or have a topic suggestion? [Open an issue](https://github.com/aelmokadem/pharmacometrics-podcast/issues) and include the notebook name and any relevant details.
 
+For other questions or collaboration inquiries, email Ahmed Elmokadem at [podcast@aequantitative.com](mailto:podcast@aequantitative.com) or connect on [LinkedIn](https://www.linkedin.com/in/ahmed-elmokadem-87b01875/).
+
 For adding notebooks, updating packages, or publishing the website, see the [maintainer guide](MAINTAINING.md).
