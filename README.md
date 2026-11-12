@@ -30,7 +30,9 @@ The initial notebook uses R. Python and Julia environments are ready for future 
 
 Clone or download this repository. The commands below run from its root directory. To execute a complete `.qmd` notebook, install [Quarto](https://quarto.org/docs/get-started/) (version 1.8.24 matches this project) and the notebook's language runtime.
 
-For the initial R example, use R 4.5.3:
+For the initial R example, use R 4.6.2:
+
+Check `R --version` before restoring packages. If you manage R with rig, select your R 4.6.2 installation with `rig default` first.
 
 ```sh
 # Restore the notebook's R packages.
@@ -45,9 +47,9 @@ Set up only the language you need:
 
 | Language | Environment | Restore packages |
 |---|---|---|
-| R 4.5.3 | renv | `Rscript -e 'renv::restore(prompt = FALSE)'` |
-| Python 3.13.12 | uv | `uv sync --locked` |
-| Julia 1.12.4 | Pkg | `julia --project=. -e 'using Pkg; Pkg.instantiate()'` |
+| R 4.6.2 | renv | `Rscript -e 'renv::restore(prompt = FALSE)'` |
+| Python 3.14.6 | uv | `uv sync --locked` |
+| Julia 1.13.3 | Pkg | `julia +1.13.3 --project=. -e 'using Pkg; Pkg.instantiate()'` (with juliaup) |
 
 Lockfiles record package versions to help reproduce the results. For Python and Julia execution, including the Julia notebook kernel setup, see [language environment setup](MAINTAINING.md#r-python-and-julia-environments).
 

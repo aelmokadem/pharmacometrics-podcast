@@ -32,15 +32,17 @@ _freeze/                     Computational results and figures; must be committe
 
 Install [Quarto CLI](https://quarto.org/docs/get-started/) using its installer for your operating system. The workflow pins **Quarto 1.8.24**; use that version locally for matching rendering behavior. No Node or frontend package installation is needed.
 
-For the initial executable notebook, install R 4.5.3 and restore the project library from the repository root:
+For the initial executable notebook, install R 4.6.2 and restore the project library from the repository root:
 
 ```sh
 Rscript -e 'renv::restore(prompt = FALSE)'
 ```
 
+Check `R --version` first. When using rig, select the R 4.6.2 installation shown by `rig list` with `rig default <name>` before restoring or rendering. Quarto uses the R on PATH unless `QUARTO_R` selects another installation.
+
 The project `.Rprofile` activates renv and bootstraps its locked version if needed. The lockfile includes `knitr`, `rmarkdown`, and their dependencies. See the language environment instructions below for Python and Julia.
 
-The simulation uses base R and standard graphics only. Initial outputs were generated with R 4.5.3. To check your installation and preview from the repository root:
+The simulation uses base R and standard graphics only. The notebook outputs have been regenerated with R 4.6.2. To check your installation and preview from the repository root:
 
 ```sh
 quarto check
@@ -107,9 +109,9 @@ Each language has one shared environment at the repository root. Set up only the
 
 | Language | Runtime used to initialize | Committed environment files | Notebook front matter |
 |---|---|---|---|
-| R | 4.5.3 (recorded in `renv.lock`) | `.Rprofile`, `renv.lock`, `renv/activate.R`, `renv/settings.json`, `renv/.gitignore` | `engine: knitr`, `programming-language: R`; use `{r}` chunks |
-| Python | 3.13.12 (pinned in `.python-version`) | `pyproject.toml`, `uv.lock`, `.python-version` | `jupyter: python3`, `programming-language: Python`; use `{python}` chunks |
-| Julia | 1.12.4 (recorded in `Manifest.toml`, project accepts 1.12.x) | `Project.toml`, `Manifest.toml` | `jupyter: pharmacometrics-julia`, `programming-language: Julia`; use `{julia}` chunks |
+| R | 4.6.2 (recorded in `renv.lock`) | `.Rprofile`, `renv.lock`, `renv/activate.R`, `renv/settings.json`, `renv/.gitignore` | `engine: knitr`, `programming-language: R`; use `{r}` chunks |
+| Python | 3.14.6 (pinned in `.python-version`) | `pyproject.toml`, `uv.lock`, `.python-version` | `jupyter: python3`, `programming-language: Python`; use `{python}` chunks |
+| Julia | 1.13.3 (recorded in `Manifest.toml`, project accepts 1.13.x) | `Project.toml`, `Manifest.toml` | `jupyter: pharmacometrics-julia`, `programming-language: Julia`; use `{julia}` chunks |
 
 For Python and Julia notebooks, omit `engine: knitr`. Keep each notebook's scientific dependencies documented in its introduction. Start all commands below at the repository root.
 
@@ -146,7 +148,9 @@ Add dependencies with `uv add package-name`, remove them with `uv remove package
 
 #### Julia with Pkg
 
-Install Julia 1.12.4, matching the manifest. If using juliaup, `juliaup add 1.12.4` installs it; use `julia +1.12.4` in place of `julia` below if it is not your default. This machine already had Julia installed under `~/.juliaup/bin`; add that directory to PATH if your shell cannot find it.
+Install Julia 1.13.3, matching the manifest. If using juliaup, `juliaup add 1.13.3` installs it; use `julia +1.13.3` in place of `julia` below if it is not your default. This machine already had Julia installed under `~/.juliaup/bin`; add that directory to PATH if your shell cannot find it.
+
+After changing Python's pinned version, run `uv sync --locked` to recreate `.venv`, then reinstall the Julia kernelspec below. After changing Julia's minor version, run `Pkg.update()` with the new Julia runtime, review the regenerated manifest, and reinstall its kernelspec.
 
 First run `uv sync --locked` to provide Jupyter. Then, on macOS/Linux:
 
