@@ -59,6 +59,31 @@ pre.sourceCode { border: 1px solid var(--bs-border-color); border-radius: 0.35re
   align-items: center;
   gap: 0.5rem;
 }
+.subscribe-box {
+  width: 100%;
+  padding: 2rem 1.25rem;
+  border-top: 1px solid var(--bs-border-color);
+  background: var(--bs-body-bg);
+  color: var(--bs-body-color);
+}
+.subscribe-box #mc_embed_signup {
+  max-width: 38rem;
+  margin: 0 auto;
+}
+.subscribe-box h2 { margin-top: 0; }
+.subscribe-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.subscribe-fields input { flex: 1 1 15rem; min-width: 0; }
+.subscribe-fields button { flex: 0 0 auto; }
+.subscribe-honeypot { position: absolute; left: -5000px; }
+.subscribe-note {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--bs-secondary-color);
+}
 @media (max-width: 767px) {
   .hero { padding-top: 0.5rem; grid-template-columns: minmax(0, 1fr); }
   .hero-artwork { width: min(100%, 19rem); }

@@ -64,6 +64,8 @@ format:
     link-external-newwindow: false
     smooth-scroll: false
     lang: en
+    include-after-body:
+      - subscribe.html
 
 execute:
   freeze: auto
