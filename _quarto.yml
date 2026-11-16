@@ -5,7 +5,7 @@ project:
     - index.qmd
     - resources.qmd
     - about.qmd
-    - notebooks/**/*.qmd
+    - notebooks/*.qmd
 
 website:
   title: "The Pharmacometrics Podcast"

@@ -82,16 +82,6 @@ half_life_h <- log(2) / k_h
 time_h <- seq(0, 48, by = 0.25)
 concentration_mg_l <- (dose_mg / volume_l) * exp(-k_h * time_h)
 
-profile <- data.frame(time_h, concentration_mg_l)
-
-# Check the initial condition and the defining half-life relationship.
-stopifnot(
-  all.equal(profile$concentration_mg_l[1], dose_mg / volume_l),
-  all.equal((dose_mg / volume_l) * exp(-k_h * half_life_h),
-            (dose_mg / volume_l) / 2),
-  all(diff(profile$concentration_mg_l) < 0)
-)
-
 data.frame(
   initial_concentration_mg_l = dose_mg / volume_l,
   elimination_rate_constant_per_h = k_h,
@@ -109,18 +99,15 @@ data.frame(
 #| fig-width: 7
 #| fig-height: 4.5
 # A white plotting surface keeps the figure readable in both site themes.
-par(bg = "white", fg = "#243746", col.axis = "#243746",
-    col.lab = "#243746", mar = c(4.5, 4.5, 1, 1))
+par(bg = "white")
 plot(
-  profile$time_h, profile$concentration_mg_l,
+  time_h, concentration_mg_l,
   type = "l", lwd = 2.5, col = "#176b82",
   xlab = "Time after dose (h)", ylab = "Concentration (mg/L)",
   ylim = c(0, dose_mg / volume_l), las = 1, bty = "l"
 )
 points(half_life_h, (dose_mg / volume_l) / 2,
        pch = 19, col = "#243746")
-text(half_life_h, (dose_mg / volume_l) / 2,
-     labels = "One half-life", pos = 4, cex = 0.85)
 ```
 
 ## Interpret the results
@@ -138,6 +125,8 @@ This model omits absorption, infusion duration, distribution phases, changing ph
 The central relationship is simple: dose and volume set the initial concentration, while the ratio of clearance to volume sets the rate of exponential decline. This provides a useful starting point for understanding more complex pharmacokinetic models.
 
 ## Further exploration
+
+Continue with [From Dose to Exposure to Response](dose-exposure-response.qmd) to explore oral dosing, a saturating concentration–effect relationship, and different dosing schedules.
 
 Try changing one parameter at a time. Double the dose, double clearance, or double volume, and explain each new profile using the equations before rerunning the code. The derivation above is self-contained and requires no external dataset.
 

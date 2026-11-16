@@ -35,9 +35,11 @@ Browse [published notebooks](resources.qmd#published-notebooks) by topic or sear
 
 The collection develops alongside the podcast, with new notebooks added as the material takes shape.
 
-## Start with a model
+## Start here
 
-[Simulating a One-Compartment Pharmacokinetic Model](notebooks/pkpd/one-compartment-pk.qmd) introduces an intravenous bolus model, derives its concentration–time solution, and simulates it with base R.
+[From Dose to Exposure to Response](notebooks/dose-exposure-response.qmd) follows hypothetical Compound X from oral dosing to plasma concentrations and biomarker inhibition, using simple base R calculations.
+
+For a shorter first step, [Simulating a One-Compartment Pharmacokinetic Model](notebooks/one-compartment-pk.qmd) introduces one intravenous dose and its concentration–time curve.
 
 ## Explore the code
 

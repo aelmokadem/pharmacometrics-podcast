@@ -8,23 +8,17 @@ Some notebooks accompany podcast episodes; others are standalone tutorials. You 
 
 ## Start here
 
-Read [Simulating a One-Compartment Pharmacokinetic Model](https://aelmokadem.github.io/pharmacometrics-podcast/notebooks/pkpd/one-compartment-pk.html) for an introduction to an intravenous bolus model, its equations, and a concentration–time simulation in base R. The [source notebook](notebooks/pkpd/one-compartment-pk.qmd) contains the explanation and executable code together.
+Start with [From Dose to Exposure to Response](https://aelmokadem.github.io/pharmacometrics-podcast/notebooks/dose-exposure-response.html), the companion to planned EP003, for oral dosing, exposure, biomarker inhibition, and dosing schedules in base R. The [source notebook](notebooks/dose-exposure-response.qmd) can be used before the episode is published.
+
+For a shorter introduction, read [Simulating a One-Compartment Pharmacokinetic Model](https://aelmokadem.github.io/pharmacometrics-podcast/notebooks/one-compartment-pk.html) for an introduction to an intravenous bolus model, its equations, and a concentration–time simulation in base R. The [source notebook](notebooks/one-compartment-pk.qmd) contains the explanation and executable code together.
 
 You can read the published notebooks, code, and results in your browser without installing anything.
 
 ## Find the code
 
-The website generates topic filters from published notebook metadata. Categories can expand as notebooks are added; they do not depend on a fixed episode sequence. The current folder structure is:
+All source notebooks live directly in [`notebooks/`](notebooks/). The website generates topic filters from each notebook's `categories` metadata, so a notebook can cover multiple topics without belonging to a topic folder. Categories can expand as notebooks are added; they do not depend on a fixed episode sequence.
 
-| Folder | Topic |
-|---|---|
-| [`notebooks/pkpd/`](notebooks/pkpd/) | PK/PD modeling |
-| [`notebooks/poppk/`](notebooks/poppk/) | Population pharmacokinetics |
-| [`notebooks/pbpk/`](notebooks/pbpk/) | Physiologically based pharmacokinetic modeling |
-| [`notebooks/qsp/`](notebooks/qsp/) | Quantitative systems pharmacology |
-| [`notebooks/simulation/`](notebooks/simulation/) | Simulation and computational tools |
-
-The initial notebook uses R. Python and Julia environments are ready for future notebooks. Each notebook explains its assumptions and dependencies; some topic folders do not have notebooks yet. Shared datasets belong in `data/`.
+The notebooks use R. Python and Julia environments are ready for future notebooks. Each notebook explains its assumptions and dependencies. Shared datasets belong in `data/`.
 
 ## Run a notebook yourself
 
@@ -38,10 +32,10 @@ Check `R --version` before restoring packages. If you manage R with rig, select 
 # Restore the notebook's R packages.
 Rscript -e 'renv::restore(prompt = FALSE)'
 # Run the code and generate the notebook as HTML.
-quarto render notebooks/pkpd/one-compartment-pk.qmd
+quarto render notebooks/one-compartment-pk.qmd
 ```
 
-Open the resulting `_site/notebooks/pkpd/one-compartment-pk.html` in your browser. You can also open the source in an editor with Quarto support, such as RStudio or VS Code, to explore the code and change the hypothetical parameters.
+Open the resulting `_site/notebooks/one-compartment-pk.html` in your browser. You can also open the source in an editor with Quarto support, such as RStudio or VS Code, to explore the code and change the hypothetical parameters.
 
 Set up only the language you need:
 

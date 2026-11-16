@@ -4,7 +4,7 @@ description: "Explore technical notebooks by scientific topic, with mathematics,
 toc: false
 listing:
   id: notebooks
-  contents: notebooks/**/*.qmd
+  contents: notebooks/*.qmd
   type: table
   fields: [title, description, categories, programming-language]
   field-display-names:

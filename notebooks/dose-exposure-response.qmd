@@ -1,0 +1,349 @@
+---
+title: "From Dose to Exposure to Response: PK/PD Modeling"
+description: "Follow hypothetical Compound X from an oral dose to plasma concentrations and biomarker inhibition using simple base R calculations."
+categories: [PK/PD Modeling]
+programming-language: R
+engine: knitr
+---
+
+## Same dose, same response?
+
+Two people receive the same dose. Do they experience the same drug concentrations? And if their concentrations match, must their responses match too?
+
+This notebook follows the Compound X example from the planned **EP003 — From Dose to Exposure to Response: PK/PD Modeling**. It can be read independently of the episode.
+
+<!-- Add the episode link here once the episode is published. -->
+
+We will connect three quantities:
+
+**Oral dose (mg) → plasma concentration (mg/L) → biomarker inhibition (%)**
+
+All values are hypothetical. Compound X is a teaching example, not a real drug. The biomarker effect is not a prediction of clinical benefit or a dosing recommendation.
+
+The calculations use **base R**, with no additional packages. To render this `.qmd` file, use R with Quarto, `knitr`, and `rmarkdown`; see the [repository setup instructions](https://github.com/aelmokadem/pharmacometrics-podcast#run-a-notebook-yourself). Run the code blocks in order. Each calculation uses the values defined above it.
+
+If you want a shorter introduction to concentration–time curves first, start with [Simulating a One-Compartment Pharmacokinetic Model](one-compartment-pk.qmd), which considers a single intravenous dose.
+
+## 1. From an oral dose to a concentration–time curve
+
+An oral dose takes time to enter the bloodstream. We will represent that with first-order absorption into one well-mixed compartment, followed by first-order elimination. The model assumes constant bioavailability, clearance, and volume, with no absorption lag or drug present before the first dose.
+
+| Parameter | Meaning | Example value |
+|---|---|---|
+| $D$ | Oral dose | 100 mg |
+| $F$ | Fraction reaching systemic circulation unchanged | 0.8 (80%) |
+| $k_a$ | Absorption rate constant | 1 h$^{-1}$ |
+| $V$ | Apparent volume of distribution | 20 L |
+| $CL$ | Clearance | 2 L/h |
+| $k = CL/V$ | Elimination rate constant | 0.1 h$^{-1}$ |
+
+With these assumptions, concentration after one oral dose is
+
+$$
+C(t) = \frac{F D k_a}{V(k_a-k)}\left(e^{-kt}-e^{-k_a t}\right).
+$$
+
+You do not need to solve a differential equation to use this result. The two exponential terms describe the rise and fall of concentration. This version of the equation requires $k_a \ne k$; keep the two rate constants different when experimenting.
+
+```{r}
+dose <- 100          # mg
+bioavailability <- 0.8
+volume <- 20         # L
+clearance <- 2       # L/h
+ka <- 1              # 1/h
+k <- clearance / volume
+
+time <- seq(0, 48, by = 0.1)  # hours after dosing
+
+concentration <- bioavailability * dose * ka / (volume * (ka - k)) *
+  (exp(-k * time) - exp(-ka * time))
+```
+
+`seq()` creates the times at which we calculate concentration. `exp()` calculates the exponential in the equation. R applies the calculation to every time in the sequence.
+
+```{r}
+#| label: fig-oral-pk
+#| fig-cap: "Compound X rises to a peak after oral dosing, then declines as elimination continues."
+#| fig-alt: "Plasma concentration starts at zero, peaks near 3.1 mg/L at about 2.6 hours, then declines toward zero over 48 hours."
+#| fig-width: 7
+#| fig-height: 4.5
+par(bg = "white")
+plot(time, concentration, type = "l", lwd = 2, col = "#176b82",
+     xlab = "Time after dose (h)", ylab = "Concentration (mg/L)")
+```
+
+### Peak, exposure, and half-life
+
+$C_{\max}$ is the peak concentration, and $T_{\max}$ is when it occurs. Here we find the peak on our simulated time grid. In a study, the highest measured concentration also depends on when samples are collected.
+
+For this linear model, total single-dose exposure from time zero to infinity and the elimination half-life are
+
+$$
+\mathrm{AUC}_{0-\infty} = \frac{F D}{CL},
+\qquad
+ t_{1/2} = \frac{\log(2)V}{CL}.
+$$
+
+```{r}
+cmax <- max(concentration)
+tmax <- time[which.max(concentration)]
+auc <- bioavailability * dose / clearance
+half_life <- log(2) * volume / clearance
+
+data.frame(
+  Cmax_mg_L = cmax,
+  Tmax_h = tmax,
+  AUC_0_infinity_mg_h_L = auc,
+  Elimination_half_life_h = half_life
+)
+```
+
+`which.max()` gives the position of the highest concentration; square brackets select the time at that position. `data.frame()` puts the results into a table.
+
+The total AUC is 40 mg·h/L and the elimination half-life is about 6.9 hours. The plot stops at 48 hours, but the AUC calculated above includes the remaining exposure beyond that time. If absorption were slower than elimination, the final decline after oral dosing could reflect absorption rather than this elimination half-life.
+
+### Slower absorption: same total AUC, different peak
+
+Now keep the dose and bioavailability unchanged but reduce the absorption rate constant.
+
+```{r}
+ka_slow <- 0.3
+concentration_slow <- bioavailability * dose * ka_slow /
+  (volume * (ka_slow - k)) *
+  (exp(-k * time) - exp(-ka_slow * time))
+```
+
+```{r}
+#| label: fig-absorption
+#| fig-cap: "Slower absorption lowers and delays the peak. Both curves have the same AUC from zero to infinity because dose, bioavailability, and clearance are unchanged."
+#| fig-alt: "The faster-absorption curve peaks earlier and higher; the slower-absorption curve has a later, lower peak and higher concentrations later on."
+#| fig-width: 7
+#| fig-height: 4.5
+par(bg = "white")
+plot(time, concentration, type = "l", lwd = 2, col = "#176b82",
+     xlab = "Time after dose (h)", ylab = "Concentration (mg/L)")
+lines(time, concentration_slow, lwd = 2, lty = 2, col = "#b45309")
+legend("topright", c("Faster absorption", "Slower absorption"),
+       col = c("#176b82", "#b45309"), lty = c(1, 2), lwd = 2, bty = "n")
+```
+
+This is a simplified way to illustrate different absorption rates. It does not describe every feature of a modified-release formulation. Equal total AUC does not mean equal concentration at every time, or equal AUC over a shorter interval.
+
+## 2. Same dose, different exposure
+
+Imagine a second person with clearance of 4 L/h instead of 2 L/h. Keep everything else the same, including the 100 mg oral dose.
+
+```{r}
+clearance_high <- 4
+k_high <- clearance_high / volume
+
+concentration_high_clearance <- bioavailability * dose * ka /
+  (volume * (ka - k_high)) *
+  (exp(-k_high * time) - exp(-ka * time))
+
+data.frame(
+  Clearance_L_h = c(clearance, clearance_high),
+  AUC_0_infinity_mg_h_L = bioavailability * dose /
+    c(clearance, clearance_high)
+)
+```
+
+```{r}
+#| label: fig-clearance
+#| fig-cap: "At the same dose, higher clearance reduces exposure: doubling clearance halves total AUC in this linear model."
+#| fig-alt: "Concentration is lower and declines faster with clearance of 4 L/h than with clearance of 2 L/h."
+#| fig-width: 7
+#| fig-height: 4.5
+par(bg = "white")
+plot(time, concentration, type = "l", lwd = 2, col = "#176b82",
+     xlab = "Time after dose (h)", ylab = "Concentration (mg/L)")
+lines(time, concentration_high_clearance, lwd = 2, lty = 2, col = "#b45309")
+legend("topright", c("Clearance: 2 L/h", "Clearance: 4 L/h"),
+       col = c("#176b82", "#b45309"), lty = c(1, 2), lwd = 2, bty = "n")
+```
+
+The same dose produces AUC values of 40 and 20 mg·h/L. A difference in exposure could therefore explain a difference in response even before considering pharmacodynamic sensitivity.
+
+## 3. From concentration to biomarker inhibition
+
+Suppose Compound X can reduce an inflammatory biomarker by at most 80% relative to its baseline. Use an immediate E-max model:
+
+$$
+I(C) = \frac{I_{\max} C}{EC_{50} + C}.
+$$
+
+$I(C)$ is biomarker inhibition in percent. $I_{\max}$ is the maximum inhibition, and $EC_{50}$ is the concentration producing half of that maximum. We use the symbol $I_{\max}$ because the effect is inhibition; it plays the same role as E-max in the episode.
+
+At $EC_{50}$, inhibition is **40%**, half of the 80% maximum. It is not necessarily 50% inhibition.
+
+```{r}
+imax <- 80            # maximum biomarker inhibition (%)
+ec50 <- 0.5           # mg/L
+
+concentration_range <- seq(0, 5, by = 0.05)
+inhibition <- imax * concentration_range / (ec50 + concentration_range)
+
+# A less sensitive system needs a higher concentration for the same effect.
+ec50_less_sensitive <- 1.5
+inhibition_less_sensitive <- imax * concentration_range /
+  (ec50_less_sensitive + concentration_range)
+```
+
+```{r}
+#| label: fig-emax
+#| fig-cap: "Inhibition approaches an 80% maximum. Increasing EC50 reduces potency without changing the maximum inhibition."
+#| fig-alt: "Two concentration–inhibition curves approach the same 80% limit. The curve with EC50 of 0.5 mg/L lies above the curve with EC50 of 1.5 mg/L."
+#| fig-width: 7
+#| fig-height: 4.5
+par(bg = "white")
+plot(concentration_range, inhibition, type = "l", lwd = 2, col = "#176b82",
+     ylim = c(0, 80), xlab = "Concentration (mg/L)",
+     ylab = "Biomarker inhibition (%)")
+lines(concentration_range, inhibition_less_sensitive,
+      lwd = 2, lty = 2, col = "#b45309")
+abline(h = imax, lty = 3)
+legend("bottomright", c("EC50: 0.5 mg/L", "EC50: 1.5 mg/L"),
+       col = c("#176b82", "#b45309"), lty = c(1, 2), lwd = 2, bty = "n")
+```
+
+The same concentration can produce different effects if sensitivity differs. A lower $EC_{50}$ means greater potency within this model; it does not imply a greater maximum effect.
+
+### Double the dose: does the effect double?
+
+Our PK model is linear, so doubling the dose doubles concentration at every time. The inhibition model is nonlinear, so inhibition does not double.
+
+```{r}
+concentration_double_dose <- 2 * concentration
+
+inhibition_time <- imax * concentration / (ec50 + concentration)
+inhibition_double_dose <- imax * concentration_double_dose /
+  (ec50 + concentration_double_dose)
+```
+
+```{r}
+#| label: fig-dose-effect
+#| fig-cap: "Doubling the dose increases inhibition, but the effect remains limited by the 80% maximum."
+#| fig-alt: "The 200 mg dose produces greater inhibition than 100 mg throughout the profile, but peak inhibition rises only modestly because both peaks approach the maximum effect."
+#| fig-width: 7
+#| fig-height: 4.5
+par(bg = "white")
+plot(time, inhibition_time, type = "l", lwd = 2, col = "#176b82",
+     ylim = c(0, 80), xlab = "Time after dose (h)",
+     ylab = "Biomarker inhibition (%)")
+lines(time, inhibition_double_dose, lwd = 2, lty = 2, col = "#b45309")
+legend("topright", c("100 mg", "200 mg"),
+       col = c("#176b82", "#b45309"), lty = c(1, 2), lwd = 2, bty = "n")
+```
+
+These curves assume inhibition follows plasma concentration immediately. Near the plateau, a large increase in concentration produces only a small additional effect.
+
+## 4. Same daily dose, different dosing schedules
+
+Compare the schedules in the episode:
+
+- 100 mg every 24 hours.
+- 50 mg every 12 hours.
+
+Both provide 100 mg per day. Under linear, time-invariant PK with unchanged bioavailability and clearance, their **24-hour AUC at steady state** is the same:
+
+$$
+\mathrm{AUC}_{\text{24 h, steady state}} = \frac{F\times\text{daily dose}}{CL}
+= 40\ \mathrm{mg\cdot h/L}.
+$$
+
+That equality applies at steady state. Starting with no drug in the body, the AUC over the first day need not be equal for the two schedules.
+
+With linear PK, we can add together the concentrations contributed by each dose. The code below uses one loop for each schedule. Each loop applies the same single-dose equation we used earlier.
+
+```{r}
+time_repeated <- seq(0, 168, by = 0.1)  # seven days
+concentration_daily <- rep(0, length(time_repeated))
+concentration_twice_daily <- rep(0, length(time_repeated))
+
+for (dose_time in seq(0, 144, by = 24)) {
+  after_dose <- time_repeated >= dose_time
+  hours_since_dose <- time_repeated[after_dose] - dose_time
+
+  concentration_daily[after_dose] <- concentration_daily[after_dose] +
+    bioavailability * 100 * ka / (volume * (ka - k)) *
+    (exp(-k * hours_since_dose) - exp(-ka * hours_since_dose))
+}
+
+for (dose_time in seq(0, 156, by = 12)) {
+  after_dose <- time_repeated >= dose_time
+  hours_since_dose <- time_repeated[after_dose] - dose_time
+
+  concentration_twice_daily[after_dose] <- concentration_twice_daily[after_dose] +
+    bioavailability * 50 * ka / (volume * (ka - k)) *
+    (exp(-k * hours_since_dose) - exp(-ka * hours_since_dose))
+}
+```
+
+`rep(0, ...)` starts each profile at zero. `after_dose` selects times at or after the dose, so a future dose cannot contribute to an earlier concentration. The loop adds each dose's contribution to the existing profile.
+
+Calculate inhibition from the **total** concentration at each time. We add concentrations because the PK model is linear; we cannot add the inhibition from separate doses because the PD model is nonlinear.
+
+```{r}
+inhibition_daily <- imax * concentration_daily / (ec50 + concentration_daily)
+inhibition_twice_daily <- imax * concentration_twice_daily /
+  (ec50 + concentration_twice_daily)
+
+# Show the final day, when these example profiles are very close to steady state.
+last_day <- time_repeated >= 144
+hours_in_day <- time_repeated[last_day] - 144
+```
+
+```{r}
+#| label: fig-schedules
+#| fig-cap: "On day seven, both schedules are very close to steady state. Dividing the daily dose reduces fluctuations in concentration and immediate biomarker inhibition in this example."
+#| fig-alt: "Two panels show the final 24 hours. Once-daily dosing has one higher concentration peak and a lower trough; twice-daily dosing has two smaller peaks and maintains more consistent inhibition."
+#| fig-width: 7
+#| fig-height: 7
+par(bg = "white", mfrow = c(2, 1))
+plot(hours_in_day, concentration_daily[last_day], type = "l",
+     lwd = 2, col = "#176b82", ylim = c(0, 4),
+     xlab = "Hours into day seven", ylab = "Concentration (mg/L)")
+lines(hours_in_day, concentration_twice_daily[last_day],
+      lwd = 2, lty = 2, col = "#b45309")
+legend("topright", c("100 mg every 24 h", "50 mg every 12 h"),
+       col = c("#176b82", "#b45309"), lty = c(1, 2), lwd = 2, bty = "n")
+
+plot(hours_in_day, inhibition_daily[last_day], type = "l",
+     lwd = 2, col = "#176b82", ylim = c(0, 80),
+     xlab = "Hours into day seven", ylab = "Biomarker inhibition (%)")
+lines(hours_in_day, inhibition_twice_daily[last_day],
+      lwd = 2, lty = 2, col = "#b45309")
+par(mfrow = c(1, 1))
+```
+
+Steady state means a repeating pattern, not a flat concentration. Here, divided dosing produces smaller peaks and higher troughs. The trough is the concentration just before the next dose; it is not the zero concentration at the start of a first-dose profile.
+
+The inhibition curves illustrate the consequences of our chosen immediate E-max relationship. They do not establish that one regimen is clinically better. A different sensitivity, delayed response, or safety relationship could change the comparison.
+
+## 5. What if the effect arrives late?
+
+The episode also describes effects that peak after plasma concentration has begun falling. Our immediate model cannot reproduce that behavior: inhibition is determined entirely by the current concentration.
+
+A delay could reflect slow movement to the site of action or turnover of the biomarker itself. If a drug inhibits biomarker production, existing biomarker still takes time to disappear. In either case, the same plasma concentration may accompany different effects while concentrations are rising and falling, producing a hysteresis loop.
+
+Those mechanisms need an additional model for how the effect site or biomarker changes over time. We leave those equations for a dedicated notebook. A hysteresis loop alone would not identify which mechanism caused the delay.
+
+## Try changing one thing
+
+- Change `clearance` from 2 to 4 and rerun the notebook. How do exposure and inhibition change?
+- Change `ec50` from 0.5 to 2. Does doubling the dose now make a bigger difference near the peak?
+- Change `imax` from 80 to 60. Which curves change, and which stay the same?
+- Plot all seven days of repeated-dose concentrations instead of selecting `last_day`. Can you see the profiles approach a repeating pattern?
+
+## What this model tells us—and what it leaves open
+
+Dose, exposure, and effect are different quantities. Equal doses can produce different exposures; equal concentrations can produce different effects; and equal daily AUC can accompany different concentration and effect profiles.
+
+This model is deliberately limited to linear one-compartment PK, first-order absorption, and an immediate saturating biomarker effect. It does not include active metabolites, protein binding, nonlinear clearance, delayed effects, disease progression, or measurement noise. It also assumes plasma concentration is a useful driver of the biomarker response.
+
+Finally, 80% biomarker inhibition does not imply 80% symptom improvement. Clinical benefit and adverse effects require their own evidence and relationships to exposure. An observed exposure–outcome association alone does not establish that changing exposure would cause a better outcome.
+
+## Further reading
+
+- Sara E. Rosenbaum's [single oral dose simulation](https://web.uri.edu/pharmacy/research/rosenbaum/sims/model6/) explores first-order absorption, peak concentration, and exposure.
+- Nick Holford's [Pharmacodynamic principles and the time course of immediate drug effects](https://pmc.ncbi.nlm.nih.gov/articles/PMC7033401/) develops the concentration–effect relationship and its connection to the time course of effect.

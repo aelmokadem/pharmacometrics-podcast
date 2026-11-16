@@ -10,11 +10,8 @@ index.qmd                    Homepage
 resources.qmd                Automatic directory of published notebooks
 about.qmd                    Purpose and relationship to the podcast
 notebooks/
-  pkpd/one-compartment-pk.qmd Initial base R example
-  poppk/                     Population pharmacokinetics
-  pbpk/                      Physiologically based pharmacokinetics
-  qsp/                       Quantitative systems pharmacology
-  simulation/                Simulation and computational tools
+  one-compartment-pk.qmd Short base R introduction to IV bolus PK
+  dose-exposure-response.qmd EP003 companion: oral PK and biomarker inhibition
 data/                        Small, shareable notebook datasets
 images/                      Images and future podcast artwork
 styles/custom.scss           Minimal Bootstrap theme customization
@@ -26,7 +23,7 @@ _freeze/                     Computational results and figures; must be committe
 .github/workflows/publish.yml GitHub Pages build and deployment
 ```
 
-`_site/` and `.quarto/` are generated locally and ignored. Empty content directories are retained with `.gitkeep`. There is no episode directory.
+`_site/` and `.quarto/` are generated locally and ignored. Notebook sources live directly in `notebooks/`; topics are assigned through `categories` metadata rather than subfolders. There is no episode directory.
 
 ## Software and local preview
 
@@ -56,7 +53,7 @@ Quarto prints the local preview URL. Use `Ctrl+C` to stop. Previewing changed co
 Execute the example explicitly:
 
 ```sh
-quarto render notebooks/pkpd/one-compartment-pk.qmd
+quarto render notebooks/one-compartment-pk.qmd
 ```
 
 A single-file render executes code even with `freeze: auto`. It updates the corresponding results and figures under `_freeze/`. Run this after changes to code, external data, or dependencies: automatic freezing detects changes to notebook source, **not changes to external inputs**.
@@ -73,7 +70,7 @@ Review the resulting site, including equations, code, plots, links, and light/da
 
 ## Add a notebook
 
-Create a lowercase, hyphenated `.qmd` filename in a suitable folder under `notebooks/`. Reuse an existing folder when it fits, or create one for a new subject. The resources listing discovers `notebooks/**/*.qmd` automatically. Use this front matter, replacing the example metadata:
+Create a lowercase, hyphenated `.qmd` filename directly in `notebooks/`. The resources listing discovers `notebooks/*.qmd` automatically. Use this front matter, replacing the example metadata:
 
 ```yaml
 ---
@@ -103,7 +100,7 @@ Start with intuition before equations. Adapt this flexible outline to the subjec
 
 State runtime and package requirements in the notebook, identify hypothetical inputs, and provide figure captions and alternative text. Use native LaTeX math, cross-references, and citation syntax (`[@key]` with a real bibliography file when needed). Static figures and self-contained HTML widgets are supported; interactive outputs must work in a static website without a running backend.
 
-Internal links should use relative `.qmd` paths. Add shareable data to `data/` and refer to it relative to the notebook's directory (for example `../../data/example.csv`). Execute each new notebook locally and render the whole project before publication.
+Internal links should use relative `.qmd` paths. Add shareable data to `data/` and refer to it relative to the notebook's directory (for example `../data/example.csv`). Execute each new notebook locally and render the whole project before publication.
 
 ### R, Python, and Julia environments
 
@@ -125,7 +122,7 @@ Rscript -e 'renv::restore(prompt = FALSE)'
 # Check that the library and lockfile agree.
 Rscript -e 'renv::status()'
 # Execute using the activated project library.
-quarto render notebooks/pkpd/one-compartment-pk.qmd
+quarto render notebooks/one-compartment-pk.qmd
 ```
 
 In an R session started at the project root, add a needed package with `renv::install("package-name")`, then run `renv::snapshot()`. This project uses snapshot type `all` to record the project library, including rendering tools that are not explicitly imported by notebook code. Install only project dependencies there. Use `renv::update("package-name")` for an intentional upgrade, snapshot, and rerun affected notebooks. Restore and inspect changes rather than automatically upgrading when opening the project. renv records the R version but does not install R itself.
@@ -141,7 +138,7 @@ uv sync --locked
 uv run --locked python --version
 uv run --locked jupyter kernelspec list
 # Execute a future Python notebook (replace the path with a real notebook).
-uv run --locked quarto render notebooks/simulation/your-python-notebook.qmd
+uv run --locked quarto render notebooks/your-python-notebook.qmd
 ```
 
 `uv run` puts the project `.venv` on PATH; Quarto detects that environment. If your editor selects a different Python, select `.venv` or set `QUARTO_PYTHON` to its Python executable for that session. Jupyter and ipykernel are included; no scientific packages have been added yet.
@@ -163,7 +160,7 @@ JUPYTER="$PWD/.venv/bin/jupyter" julia --project=. -e 'using Pkg; Pkg.instantiat
 JUPYTER_DATA_DIR="$PWD/.venv/share/jupyter" julia --project=. -e 'using IJulia; IJulia.installkernel("Julia (Pharmacometrics Podcast)", "--project=" * pwd(); specname="pharmacometrics-julia")'
 uv run --locked jupyter kernelspec list
 # Execute a future Julia notebook (replace the path with a real notebook).
-uv run --locked quarto render notebooks/simulation/your-julia-notebook.qmd
+uv run --locked quarto render notebooks/your-julia-notebook.qmd
 ```
 
 The kernelspec lives inside the ignored `.venv`; regenerate it after moving the checkout, recreating `.venv`, or changing the Julia executable. Its absolute project path is local metadata and is never committed. On Windows, use the corresponding `.venv/Scripts` executables and PowerShell environment-variable syntax.
