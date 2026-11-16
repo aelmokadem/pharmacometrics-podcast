@@ -6,12 +6,10 @@ This guide covers authoring notebooks, managing dependencies, and publishing the
 
 ```text
 _quarto.yml                  Website, navigation, themes, and execution settings
-index.qmd                    Homepage
+index.qmd                    Homepage, purpose, podcast links, and contact details
 resources.qmd                Automatic directory of published notebooks
-about.qmd                    Purpose and relationship to the podcast
 notebooks/
-  one-compartment-pk.qmd Short base R introduction to IV bolus PK
-  dose-exposure-response.qmd EP003 companion: oral PK and biomarker inhibition
+  dose-exposure-response.qmd IV and oral PK, exposure, and biomarker inhibition
 data/                        Small, shareable notebook datasets
 images/                      Images and future podcast artwork
 styles/custom.scss           Minimal Bootstrap theme customization
@@ -53,7 +51,7 @@ Quarto prints the local preview URL. Use `Ctrl+C` to stop. Previewing changed co
 Execute the example explicitly:
 
 ```sh
-quarto render notebooks/one-compartment-pk.qmd
+quarto render notebooks/dose-exposure-response.qmd
 ```
 
 A single-file render executes code even with `freeze: auto`. It updates the corresponding results and figures under `_freeze/`. Run this after changes to code, external data, or dependencies: automatic freezing detects changes to notebook source, **not changes to external inputs**.
@@ -84,7 +82,7 @@ engine: knitr
 
 Choose `categories` to describe the notebook you have written. Reuse an existing category when it fits; introduce a new one when published content needs it. Multiple topics are allowed. The Resources page generates its topic filters from notebook metadata automatically; there is no fixed topic list or empty topic guide to maintain. The listing displays title, description, topic, and language, with the title linking to the notebook.
 
-Use the rough episode outline as an editorial guide, with room for foundations, data and mathematical models, pharmacokinetics, pharmacodynamics, model building and evaluation, model-informed decisions, and advanced mechanistic modeling and AI. These are potential areas of coverage, not required public categories or a committed release sequence. Add more specific categories (for example, `Noncompartmental Analysis`, `Disease Progression`, `Exposure–Response`, `Bayesian Methods`, or `AI & Machine Learning`) as relevant notebooks are published. Avoid creating a category for each episode or preassigning notebooks to tentative episode numbers. Link a notebook to an episode when the episode and its URL are available.
+Use the rough episode outline as an editorial guide, with room for foundations, data and mathematical models, pharmacokinetics, pharmacodynamics, model building and evaluation, model-informed decisions, and advanced mechanistic modeling and AI. These are potential areas of coverage, not required public categories or a committed release sequence. Add more specific categories (for example, `Noncompartmental Analysis`, `Disease Progression`, `Exposure–Response`, `Bayesian Methods`, or `AI & Machine Learning`) as relevant notebooks are published. Avoid creating a category for each episode or preassigning notebooks to tentative episode numbers. Keep scientific explanations independent of episode numbers. Use an optional **Related podcast episodes** section to collect relevant episode titles and listening links. A notebook may support several episodes, and an episode may use several notebooks. Standalone notebooks need no episode association or related-episodes section. For an upcoming episode, use its title with a clearly marked unpublished status and add a real listening link after publication; do not create a placeholder URL.
 
 Start with intuition before equations. Adapt this flexible outline to the subject:
 
@@ -95,8 +93,10 @@ Start with intuition before equations. Adapt this flexible outline to the subjec
 5. Simulation or analysis
 6. Results and interpretation
 7. Limitations and key takeaways
-8. Verified references or further reading
-9. Optional associated episode link, only when a real URL is available
+8. Verified references to published papers, books, or software documentation
+9. Optional Related podcast episodes section, with published links or clearly marked upcoming titles
+
+Use only published papers, books, or software documentation as scientific references; do not cite informal simulation pages or blog posts as references. Verify bibliographic details and link to the publication, publisher, or official documentation.
 
 State runtime and package requirements in the notebook, identify hypothetical inputs, and provide figure captions and alternative text. Use native LaTeX math, cross-references, and citation syntax (`[@key]` with a real bibliography file when needed). Static figures and self-contained HTML widgets are supported; interactive outputs must work in a static website without a running backend.
 
@@ -122,7 +122,7 @@ Rscript -e 'renv::restore(prompt = FALSE)'
 # Check that the library and lockfile agree.
 Rscript -e 'renv::status()'
 # Execute using the activated project library.
-quarto render notebooks/one-compartment-pk.qmd
+quarto render notebooks/dose-exposure-response.qmd
 ```
 
 In an R session started at the project root, add a needed package with `renv::install("package-name")`, then run `renv::snapshot()`. This project uses snapshot type `all` to record the project library, including rendering tools that are not explicitly imported by notebook code. Install only project dependencies there. Use `renv::update("package-name")` for an intentional upgrade, snapshot, and rerun affected notebooks. Restore and inspect changes rather than automatically upgrading when opening the project. renv records the R version but does not install R itself.

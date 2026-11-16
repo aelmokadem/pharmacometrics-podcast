@@ -1,8 +1,12 @@
 ---
 title: "From Dose to Exposure to Response: PK/PD Modeling"
-description: "Follow hypothetical Compound X from an oral dose to plasma concentrations and biomarker inhibition using simple base R calculations."
+description: "Follow hypothetical Compound X from IV and oral doses to plasma concentrations and biomarker inhibition using simple base R calculations."
 categories: [PK/PD Modeling]
 programming-language: R
+aliases:
+  - one-compartment-pk.html
+  - /notebooks/pkpd/one-compartment-pk.html
+  - /notebooks/pkpd/dose-exposure-response.html
 engine: knitr
 ---
 
@@ -10,32 +14,89 @@ engine: knitr
 
 Two people receive the same dose. Do they experience the same drug concentrations? And if their concentrations match, must their responses match too?
 
-This notebook follows the Compound X example from the planned **EP003 — From Dose to Exposure to Response: PK/PD Modeling**. It can be read independently of the episode.
-
-<!-- Add the episode link here once the episode is published. -->
+Follow hypothetical Compound X from a single intravenous dose to oral dosing, drug exposure, and biomarker inhibition. This notebook is self-contained.
 
 We will connect three quantities:
 
-**Oral dose (mg) → plasma concentration (mg/L) → biomarker inhibition (%)**
+**Dose (mg) → plasma concentration (mg/L) → biomarker inhibition (%)**
 
 All values are hypothetical. Compound X is a teaching example, not a real drug. The biomarker effect is not a prediction of clinical benefit or a dosing recommendation.
 
 The calculations use **base R**, with no additional packages. To render this `.qmd` file, use R with Quarto, `knitr`, and `rmarkdown`; see the [repository setup instructions](https://github.com/aelmokadem/pharmacometrics-podcast#run-a-notebook-yourself). Run the code blocks in order. Each calculation uses the values defined above it.
 
-If you want a shorter introduction to concentration–time curves first, start with [Simulating a One-Compartment Pharmacokinetic Model](one-compartment-pk.qmd), which considers a single intravenous dose.
+## 1. Start with one intravenous dose
 
-## 1. From an oral dose to a concentration–time curve
+An intravenous (IV) bolus places the dose directly into the systemic circulation. We start with one well-mixed compartment and first-order elimination: the elimination rate is proportional to the amount of drug present. Clearance and volume remain constant, and there is no drug in the body before the dose.
 
-An oral dose takes time to enter the bloodstream. We will represent that with first-order absorption into one well-mixed compartment, followed by first-order elimination. The model assumes constant bioavailability, clearance, and volume, with no absorption lag or drug present before the first dose.
+The compartment is a mathematical representation, not an anatomical space. Its apparent volume relates the amount of drug in the body to the measured concentration.
 
 | Parameter | Meaning | Example value |
 |---|---|---|
-| $D$ | Oral dose | 100 mg |
-| $F$ | Fraction reaching systemic circulation unchanged | 0.8 (80%) |
-| $k_a$ | Absorption rate constant | 1 h$^{-1}$ |
+| $D$ | Dose | 100 mg |
 | $V$ | Apparent volume of distribution | 20 L |
 | $CL$ | Clearance | 2 L/h |
 | $k = CL/V$ | Elimination rate constant | 0.1 h$^{-1}$ |
+
+If $A(t)$ is the amount in the body and $C(t)=A(t)/V$, mass balance gives
+
+$$
+\frac{dA(t)}{dt} = -CL\,C(t) = -\frac{CL}{V}A(t),
+\qquad A(0^+) = D.
+$$
+
+Here $0^+$ means immediately after the bolus. Clearance has units of volume per time; multiplying it by concentration gives the amount eliminated per time. The solution is
+
+$$
+C_{\mathrm{IV}}(t) = \frac{D}{V}e^{-kt}.
+$$
+
+We can calculate this directly in R without a differential equation solver.
+
+```{r}
+dose <- 100          # mg
+volume <- 20         # L
+clearance <- 2       # L/h
+k <- clearance / volume
+
+time <- seq(0, 48, by = 0.1)  # hours after dosing
+concentration_iv <- dose / volume * exp(-k * time)
+half_life <- log(2) / k
+
+half_life
+```
+
+`seq()` creates the times at which we calculate concentration. `exp()` calculates the exponential in the equation. R applies the calculation to every time in the sequence.
+
+```{r}
+#| label: fig-iv-pk
+#| fig-cap: "After a 100 mg IV bolus, concentration starts at 5 mg/L and declines exponentially. The point marks one elimination half-life."
+#| fig-alt: "Concentration declines from 5 mg/L, reaching 2.5 mg/L at about 6.9 hours and approaching zero over 48 hours."
+#| fig-width: 7
+#| fig-height: 4.5
+par(bg = "white")
+plot(time, concentration_iv, type = "l", lwd = 2, col = "#176b82",
+     xlab = "Time after dose (h)", ylab = "Concentration (mg/L)")
+points(half_life, dose / volume / 2, pch = 19)
+```
+
+The initial concentration is 5 mg/L: dose divided by volume. It halves approximately every 6.9 hours:
+
+$$
+t_{1/2} = \frac{\log(2)V}{CL}.
+$$
+
+At fixed volume, increasing clearance shortens the half-life. At fixed clearance, increasing volume lowers the initial concentration and lengthens the half-life. Dose scales the concentration profile proportionally under these linear assumptions.
+
+## 2. From an oral dose to a concentration–time curve
+
+An oral dose takes time to enter the bloodstream. We will represent that with first-order absorption into one well-mixed compartment, followed by first-order elimination. The model assumes constant bioavailability, clearance, and volume, with no absorption lag or drug present before the first dose.
+
+Keep the same dose, volume, and clearance. Add two parameters for absorption:
+
+| Parameter | Meaning | Example value |
+|---|---|---|
+| $F$ | Fraction reaching systemic circulation unchanged | 0.8 (80%) |
+| $k_a$ | Absorption rate constant | 1 h$^{-1}$ |
 
 With these assumptions, concentration after one oral dose is
 
@@ -46,20 +107,14 @@ $$
 You do not need to solve a differential equation to use this result. The two exponential terms describe the rise and fall of concentration. This version of the equation requires $k_a \ne k$; keep the two rate constants different when experimenting.
 
 ```{r}
-dose <- 100          # mg
 bioavailability <- 0.8
-volume <- 20         # L
-clearance <- 2       # L/h
 ka <- 1              # 1/h
-k <- clearance / volume
-
-time <- seq(0, 48, by = 0.1)  # hours after dosing
 
 concentration <- bioavailability * dose * ka / (volume * (ka - k)) *
   (exp(-k * time) - exp(-ka * time))
 ```
 
-`seq()` creates the times at which we calculate concentration. `exp()` calculates the exponential in the equation. R applies the calculation to every time in the sequence.
+The oral profile starts at zero, rises as drug is absorbed, and then declines.
 
 ```{r}
 #| label: fig-oral-pk
@@ -129,7 +184,7 @@ legend("topright", c("Faster absorption", "Slower absorption"),
 
 This is a simplified way to illustrate different absorption rates. It does not describe every feature of a modified-release formulation. Equal total AUC does not mean equal concentration at every time, or equal AUC over a shorter interval.
 
-## 2. Same dose, different exposure
+## 3. Same dose, different exposure
 
 Imagine a second person with clearance of 4 L/h instead of 2 L/h. Keep everything else the same, including the 100 mg oral dose.
 
@@ -164,7 +219,7 @@ legend("topright", c("Clearance: 2 L/h", "Clearance: 4 L/h"),
 
 The same dose produces AUC values of 40 and 20 mg·h/L. A difference in exposure could therefore explain a difference in response even before considering pharmacodynamic sensitivity.
 
-## 3. From concentration to biomarker inhibition
+## 4. From concentration to biomarker inhibition
 
 Suppose Compound X can reduce an inflammatory biomarker by at most 80% relative to its baseline. Use an immediate E-max model:
 
@@ -172,7 +227,7 @@ $$
 I(C) = \frac{I_{\max} C}{EC_{50} + C}.
 $$
 
-$I(C)$ is biomarker inhibition in percent. $I_{\max}$ is the maximum inhibition, and $EC_{50}$ is the concentration producing half of that maximum. We use the symbol $I_{\max}$ because the effect is inhibition; it plays the same role as E-max in the episode.
+$I(C)$ is biomarker inhibition in percent. $I_{\max}$ is the maximum inhibition, and $EC_{50}$ is the concentration producing half of that maximum. We use the symbol $I_{\max}$ because the effect is inhibition; it represents the maximum drug effect in this E-max relationship.
 
 At $EC_{50}$, inhibition is **40%**, half of the 80% maximum. It is not necessarily 50% inhibition.
 
@@ -218,6 +273,12 @@ concentration_double_dose <- 2 * concentration
 inhibition_time <- imax * concentration / (ec50 + concentration)
 inhibition_double_dose <- imax * concentration_double_dose /
   (ec50 + concentration_double_dose)
+
+data.frame(
+  Dose_mg = c(dose, 2 * dose),
+  Peak_inhibition_percent = round(c(max(inhibition_time),
+                                    max(inhibition_double_dose)), 1)
+)
 ```
 
 ```{r}
@@ -237,9 +298,9 @@ legend("topright", c("100 mg", "200 mg"),
 
 These curves assume inhibition follows plasma concentration immediately. Near the plateau, a large increase in concentration produces only a small additional effect.
 
-## 4. Same daily dose, different dosing schedules
+## 5. Same daily dose, different dosing schedules
 
-Compare the schedules in the episode:
+Compare two dosing schedules:
 
 - 100 mg every 24 hours.
 - 50 mg every 12 hours.
@@ -320,9 +381,9 @@ Steady state means a repeating pattern, not a flat concentration. Here, divided 
 
 The inhibition curves illustrate the consequences of our chosen immediate E-max relationship. They do not establish that one regimen is clinically better. A different sensitivity, delayed response, or safety relationship could change the comparison.
 
-## 5. What if the effect arrives late?
+## 6. What if the effect arrives late?
 
-The episode also describes effects that peak after plasma concentration has begun falling. Our immediate model cannot reproduce that behavior: inhibition is determined entirely by the current concentration.
+Some drug effects peak after plasma concentration has begun falling. Our immediate model cannot reproduce that behavior: inhibition is determined entirely by the current concentration.
 
 A delay could reflect slow movement to the site of action or turnover of the biomarker itself. If a drug inhibits biomarker production, existing biomarker still takes time to disappear. In either case, the same plasma concentration may accompany different effects while concentrations are rising and falling, producing a hysteresis loop.
 
@@ -330,7 +391,9 @@ Those mechanisms need an additional model for how the effect site or biomarker c
 
 ## Try changing one thing
 
-- Change `clearance` from 2 to 4 and rerun the notebook. How do exposure and inhibition change?
+Change one parameter at a time, then **rerun all code from the beginning**. This updates dependent calculations such as `k <- clearance / volume` before redrawing the plots.
+
+- Change `clearance` from 2 to 4. How do exposure and inhibition change?
 - Change `ec50` from 0.5 to 2. Does doubling the dose now make a bigger difference near the peak?
 - Change `imax` from 80 to 60. Which curves change, and which stay the same?
 - Plot all seven days of repeated-dose concentrations instead of selecting `last_day`. Can you see the profiles approach a repeating pattern?
@@ -343,7 +406,11 @@ This model is deliberately limited to linear one-compartment PK, first-order abs
 
 Finally, 80% biomarker inhibition does not imply 80% symptom improvement. Clinical benefit and adverse effects require their own evidence and relationships to exposure. An observed exposure–outcome association alone does not establish that changing exposure would cause a better outcome.
 
+## Related podcast episodes
+
+- **From Dose to Exposure to Response: PK/PD Modeling** — not yet published. Listening link to follow.
+
 ## Further reading
 
-- Sara E. Rosenbaum's [single oral dose simulation](https://web.uri.edu/pharmacy/research/rosenbaum/sims/model6/) explores first-order absorption, peak concentration, and exposure.
-- Nick Holford's [Pharmacodynamic principles and the time course of immediate drug effects](https://pmc.ncbi.nlm.nih.gov/articles/PMC7033401/) develops the concentration–effect relationship and its connection to the time course of effect.
+- Rosenbaum SE. [*Basic Pharmacokinetics and Pharmacodynamics: An Integrated Textbook and Computer Simulations*](https://www.wiley.com/en-us/Basic+Pharmacokinetics+and+Pharmacodynamics%3A+An+Integrated+Textbook+and+Computer+Simulations%2C+2nd+Edition-p-9781119143154). 2nd ed. Wiley. ISBN: 978-1-119-14315-4. Covers compartmental PK, extravascular dosing, and PK/PD relationships.
+- Holford N. [Pharmacodynamic principles and the time course of immediate drug effects](https://doi.org/10.12793/tcp.2017.25.4.157). *Translational and Clinical Pharmacology*. 2017;25(4):157–161. Explains E-max models and the time course of immediate drug effects.

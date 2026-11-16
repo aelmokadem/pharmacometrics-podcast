@@ -3,6 +3,8 @@ title: "Technical Notebooks & Resources"
 pagetitle: "Technical Notebooks & Resources"
 title-block-style: none
 toc: false
+aliases:
+  - about.html
 ---
 
 ::: {.hero}
@@ -29,6 +31,8 @@ Technical notebooks, mathematical explanations, simulations, and reproducible co
 
 Some resources accompany episodes of *The Pharmacometrics Podcast*; others are standalone educational tutorials. Every notebook is written to be useful on its own, whether you are discovering a concept or revisiting its implementation.
 
+The notebooks use modeling and simulation to explore how models work, what their assumptions mean, and how to interpret their results. Each notebook identifies the language and dependencies needed to reproduce its calculations.
+
 ## Explore the notebooks
 
 Browse [published notebooks](resources.qmd#published-notebooks) by topic or search for a concept. Topics grow with the collection, from foundational PK/PD models to methods and applications in model-informed drug development.
@@ -37,9 +41,7 @@ The collection develops alongside the podcast, with new notebooks added as the m
 
 ## Start here
 
-[From Dose to Exposure to Response](notebooks/dose-exposure-response.qmd) follows hypothetical Compound X from oral dosing to plasma concentrations and biomarker inhibition, using simple base R calculations.
-
-For a shorter first step, [Simulating a One-Compartment Pharmacokinetic Model](notebooks/one-compartment-pk.qmd) introduces one intravenous dose and its concentration–time curve.
+[From Dose to Exposure to Response](notebooks/dose-exposure-response.qmd) follows hypothetical Compound X from IV and oral dosing to plasma concentrations and biomarker inhibition, using simple base R calculations.
 
 ## Explore the code
 
@@ -54,3 +56,7 @@ All notebook source code is available in the [GitHub repository](https://github.
 <a class="btn btn-outline-primary" href="https://youtube.com/@pharmacometricspodcast"><i class="bi bi-youtube" aria-hidden="true"></i> YouTube</a>
 <a class="btn btn-outline-primary" href="https://podcasts.apple.com/us/podcast/the-pharmacometrics-podcast/id6832096373"><i class="bi bi-apple" aria-hidden="true"></i> Apple Podcasts</a>
 :::
+
+## Contact
+
+For questions, topic suggestions, or collaboration inquiries, email Ahmed Elmokadem at [podcast@aequantitative.com](mailto:podcast@aequantitative.com) or connect on [LinkedIn](https://www.linkedin.com/in/ahmed-elmokadem-87b01875/).

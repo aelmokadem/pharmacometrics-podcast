@@ -4,7 +4,6 @@ project:
   render:
     - index.qmd
     - resources.qmd
-    - about.qmd
     - notebooks/*.qmd
 
 website:
@@ -21,8 +20,6 @@ website:
         text: Home
       - href: resources.qmd
         text: Technical Resources
-      - href: about.qmd
-        text: About
     right:
       - href: https://aelmokadem.me/podcasts/pharmacometrics-podcast/
         text: Podcast

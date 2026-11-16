@@ -8,9 +8,9 @@ Some notebooks accompany podcast episodes; others are standalone tutorials. You 
 
 ## Start here
 
-Start with [From Dose to Exposure to Response](https://aelmokadem.github.io/pharmacometrics-podcast/notebooks/dose-exposure-response.html), the companion to planned EP003, for oral dosing, exposure, biomarker inhibition, and dosing schedules in base R. The [source notebook](notebooks/dose-exposure-response.qmd) can be used before the episode is published.
+Start with [From Dose to Exposure to Response](https://aelmokadem.github.io/pharmacometrics-podcast/notebooks/dose-exposure-response.html) for IV and oral dosing, exposure, biomarker inhibition, and dosing schedules in base R. The [source notebook](notebooks/dose-exposure-response.qmd) contains the explanations and executable code together.
 
-For a shorter introduction, read [Simulating a One-Compartment Pharmacokinetic Model](https://aelmokadem.github.io/pharmacometrics-podcast/notebooks/one-compartment-pk.html) for an introduction to an intravenous bolus model, its equations, and a concentration–time simulation in base R. The [source notebook](notebooks/one-compartment-pk.qmd) contains the explanation and executable code together.
+Notebooks may include a **Related podcast episodes** section with episode titles and listening links. One notebook can support multiple episodes; standalone tutorials are welcome and do not need an episode association.
 
 You can read the published notebooks, code, and results in your browser without installing anything.
 
@@ -32,10 +32,10 @@ Check `R --version` before restoring packages. If you manage R with rig, select 
 # Restore the notebook's R packages.
 Rscript -e 'renv::restore(prompt = FALSE)'
 # Run the code and generate the notebook as HTML.
-quarto render notebooks/one-compartment-pk.qmd
+quarto render notebooks/dose-exposure-response.qmd
 ```
 
-Open the resulting `_site/notebooks/one-compartment-pk.html` in your browser. You can also open the source in an editor with Quarto support, such as RStudio or VS Code, to explore the code and change the hypothetical parameters.
+Open the resulting `_site/notebooks/dose-exposure-response.html` in your browser. You can also open the source in an editor with Quarto support, such as RStudio or VS Code, to explore the code and change the hypothetical parameters.
 
 Set up only the language you need:
 

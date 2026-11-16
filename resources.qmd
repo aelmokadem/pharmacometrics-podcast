@@ -17,7 +17,7 @@ listing:
   max-description-length: 220
 ---
 
-Browse educational notebooks by scientific topic. Some accompany podcast episodes; others explore independent questions. Each resource includes its own background and code dependencies.
+Browse educational notebooks by scientific topic. Some accompany podcast episodes; others explore independent questions. Each resource includes its own background and code dependencies. When relevant, notebooks list related podcast episodes alongside standalone explanations and code.
 
 ## Published notebooks
 
