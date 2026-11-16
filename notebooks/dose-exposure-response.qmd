@@ -412,5 +412,6 @@ Finally, 80% biomarker inhibition does not imply 80% symptom improvement. Clinic
 
 ## Further reading
 
+- Bonate PL. [*Pharmacokinetic-Pharmacodynamic Modeling and Simulation*](https://link.springer.com/book/10.1007/978-1-4419-9485-1). 2nd ed. Springer; 2011. doi: 10.1007/978-1-4419-9485-1. Covers statistical modeling, mixed-effects models, and simulation for PK/PD applications.
 - Rosenbaum SE. [*Basic Pharmacokinetics and Pharmacodynamics: An Integrated Textbook and Computer Simulations*](https://www.wiley.com/en-us/Basic+Pharmacokinetics+and+Pharmacodynamics%3A+An+Integrated+Textbook+and+Computer+Simulations%2C+2nd+Edition-p-9781119143154). 2nd ed. Wiley. ISBN: 978-1-119-14315-4. Covers compartmental PK, extravascular dosing, and PK/PD relationships.
 - Holford N. [Pharmacodynamic principles and the time course of immediate drug effects](https://doi.org/10.12793/tcp.2017.25.4.157). *Translational and Clinical Pharmacology*. 2017;25(4):157–161. Explains E-max models and the time course of immediate drug effects.
