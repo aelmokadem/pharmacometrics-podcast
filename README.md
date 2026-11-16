@@ -14,7 +14,7 @@ You can read the published notebooks, code, and results in your browser without 
 
 ## Find the code
 
-Notebooks are organized by scientific topic:
+The website generates topic filters from published notebook metadata. Categories can expand as notebooks are added; they do not depend on a fixed episode sequence. The current folder structure is:
 
 | Folder | Topic |
 |---|---|

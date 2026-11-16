@@ -29,34 +29,19 @@ Technical notebooks, mathematical explanations, simulations, and reproducible co
 
 Some resources accompany episodes of *The Pharmacometrics Podcast*; others are standalone educational tutorials. Every notebook is written to be useful on its own, whether you are discovering a concept or revisiting its implementation.
 
-## Explore technical topics
+## Explore the notebooks
 
-::: {.grid}
-::: {.g-col-12 .g-col-md-6 .topic}
-### [PK/PD Modeling](resources.qmd#pkpd)
-Connect drug exposure with response through pharmacokinetic and pharmacodynamic models.
-:::
-::: {.g-col-12 .g-col-md-6 .topic}
-### [Population Pharmacokinetics](resources.qmd#poppk)
-Explore variability between individuals, covariate relationships, and population inference.
-:::
-::: {.g-col-12 .g-col-md-6 .topic}
-### [PBPK Modeling](resources.qmd#pbpk)
-Use physiology and drug properties to describe disposition across tissues and organs.
-:::
-::: {.g-col-12 .g-col-md-6 .topic}
-### [Quantitative Systems Pharmacology](resources.qmd#qsp)
-Connect biological mechanisms, drug action, and disease processes through systems models.
-:::
-::: {.g-col-12 .g-col-md-6 .topic}
-### [Simulation & Computational Tools](resources.qmd#simulation)
-Develop practical workflows for numerical methods, simulation, and reproducible analysis.
-:::
-:::
+Browse [published notebooks](resources.qmd#published-notebooks) by topic or search for a concept. Topics grow with the collection, from foundational PK/PD models to methods and applications in model-informed drug development.
+
+The collection develops alongside the podcast, with new notebooks added as the material takes shape.
 
 ## Start with a model
 
 [Simulating a One-Compartment Pharmacokinetic Model](notebooks/pkpd/one-compartment-pk.qmd) introduces an intravenous bolus model, derives its concentration–time solution, and simulates it with base R.
+
+## Explore the code
+
+All notebook source code is available in the [GitHub repository](https://github.com/aelmokadem/pharmacometrics-podcast). Download the examples, run them yourself, or [suggest a topic](https://github.com/aelmokadem/pharmacometrics-podcast/issues).
 
 ## About the podcast
 

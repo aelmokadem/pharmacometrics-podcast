@@ -73,7 +73,7 @@ Review the resulting site, including equations, code, plots, links, and light/da
 
 ## Add a notebook
 
-Create a lowercase, hyphenated `.qmd` filename in the relevant topic folder. The resources listing discovers `notebooks/**/*.qmd` automatically. Use this front matter, replacing the example metadata:
+Create a lowercase, hyphenated `.qmd` filename in a suitable folder under `notebooks/`. Reuse an existing folder when it fits, or create one for a new subject. The resources listing discovers `notebooks/**/*.qmd` automatically. Use this front matter, replacing the example metadata:
 
 ```yaml
 ---
@@ -85,7 +85,9 @@ engine: knitr
 ---
 ```
 
-Use the topic names shown on the Resources page: `PK/PD Modeling`, `Population Pharmacokinetics`, `PBPK Modeling`, `Quantitative Systems Pharmacology`, or `Simulation & Computational Tools`. Multiple topics are allowed. The listing displays title, description, topic, and language, with the title linking to the notebook.
+Choose `categories` to describe the notebook you have written. Reuse an existing category when it fits; introduce a new one when published content needs it. Multiple topics are allowed. The Resources page generates its topic filters from notebook metadata automatically; there is no fixed topic list or empty topic guide to maintain. The listing displays title, description, topic, and language, with the title linking to the notebook.
+
+Use the rough episode outline as an editorial guide, with room for foundations, data and mathematical models, pharmacokinetics, pharmacodynamics, model building and evaluation, model-informed decisions, and advanced mechanistic modeling and AI. These are potential areas of coverage, not required public categories or a committed release sequence. Add more specific categories (for example, `Noncompartmental Analysis`, `Disease Progression`, `Exposure–Response`, `Bayesian Methods`, or `AI & Machine Learning`) as relevant notebooks are published. Avoid creating a category for each episode or preassigning notebooks to tentative episode numbers. Link a notebook to an episode when the episode and its URL are available.
 
 Start with intuition before equations. Adapt this flexible outline to the subject:
 
