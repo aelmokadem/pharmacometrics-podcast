@@ -59,7 +59,8 @@ clearance <- 2       # L/h
 k <- clearance / volume
 
 time <- seq(0, 48, by = 0.1)  # hours after dosing
-concentration_iv <- dose / volume * exp(-k * time)
+initial_concentration <- dose / volume
+concentration_iv <- initial_concentration * exp(-k * time)
 half_life <- log(2) / k
 
 half_life
@@ -69,20 +70,30 @@ half_life
 
 ```{r}
 #| label: fig-iv-pk
-#| fig-cap: "After a 100 mg IV bolus, concentration starts at 5 mg/L and declines exponentially. The labeled point marks one elimination half-life."
-#| fig-alt: "Concentration declines from 5 mg/L to a labeled half-life point at 6.9 hours and 2.5 mg/L, then approaches zero over 48 hours."
+#| fig-cap: "After a 100 mg IV bolus, concentration starts at 5 mg/L. Dashed guides mark when it reaches half that concentration, 2.5 mg/L at 6.9 hours."
+#| fig-alt: "A decay curve starts at 5 mg/L. A horizontal dashed guide connects the half-life point to 2.5 mg/L on the y-axis, and a vertical dashed guide connects it to 6.9 hours on the x-axis."
 #| fig-width: 7
 #| fig-height: 4.5
 par(bg = "white")
 plot(time, concentration_iv, type = "l", lwd = 2, col = "#176b82",
      xlab = "Time after dose (h)", ylab = "Concentration (mg/L)")
-half_concentration <- dose / volume / 2
+half_concentration <- initial_concentration / 2
+
+# Draw guides from the half-life point to the plot axes.
+plot_limits <- par("usr")
+segments(plot_limits[1], half_concentration, half_life, half_concentration,
+         col = "grey55", lty = 2)
+segments(half_life, plot_limits[3], half_life, half_concentration,
+         col = "grey55", lty = 2)
+axis(1, at = half_life, labels = sprintf("%.1f", half_life),
+     col.axis = "grey35", cex.axis = 0.85)
+axis(2, at = half_concentration, labels = half_concentration,
+     col.axis = "grey35", cex.axis = 0.85)
 points(half_life, half_concentration, pch = 19)
-text(half_life, half_concentration, sprintf("Half-life (%.1f h)", half_life),
-     pos = 4, cex = 0.85)
+text(half_life, half_concentration, "Half-life", pos = 4, cex = 0.85)
 ```
 
-The initial concentration is 5 mg/L: dose divided by volume. It halves approximately every 6.9 hours:
+The initial concentration is $C_0 = D/V = 100\ \mathrm{mg}/20\ \mathrm{L} = 5\ \mathrm{mg/L}$. With first-order elimination, it halves approximately every 6.9 hours.
 
 $$
 t_{1/2} = \frac{\log(2)V}{CL}.
