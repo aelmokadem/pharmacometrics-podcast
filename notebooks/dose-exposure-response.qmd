@@ -69,14 +69,17 @@ half_life
 
 ```{r}
 #| label: fig-iv-pk
-#| fig-cap: "After a 100 mg IV bolus, concentration starts at 5 mg/L and declines exponentially. The point marks one elimination half-life."
-#| fig-alt: "Concentration declines from 5 mg/L, reaching 2.5 mg/L at about 6.9 hours and approaching zero over 48 hours."
+#| fig-cap: "After a 100 mg IV bolus, concentration starts at 5 mg/L and declines exponentially. The labeled point marks one elimination half-life."
+#| fig-alt: "Concentration declines from 5 mg/L to a labeled half-life point at 6.9 hours and 2.5 mg/L, then approaches zero over 48 hours."
 #| fig-width: 7
 #| fig-height: 4.5
 par(bg = "white")
 plot(time, concentration_iv, type = "l", lwd = 2, col = "#176b82",
      xlab = "Time after dose (h)", ylab = "Concentration (mg/L)")
-points(half_life, dose / volume / 2, pch = 19)
+half_concentration <- dose / volume / 2
+points(half_life, half_concentration, pch = 19)
+text(half_life, half_concentration, sprintf("Half-life (%.1f h)", half_life),
+     pos = 4, cex = 0.85)
 ```
 
 The initial concentration is 5 mg/L: dose divided by volume. It halves approximately every 6.9 hours:
@@ -246,19 +249,29 @@ inhibition_less_sensitive <- imax * concentration_range /
 
 ```{r}
 #| label: fig-emax
-#| fig-cap: "Inhibition approaches an 80% maximum. Increasing EC50 reduces potency without changing the maximum inhibition."
-#| fig-alt: "Two concentration–inhibition curves approach the same 80% limit. The curve with EC50 of 0.5 mg/L lies above the curve with EC50 of 1.5 mg/L."
+#| fig-cap: "Both curves approach the same 80% maximum. The marked EC50 points show that 40% inhibition occurs at 0.5 mg/L for the more sensitive curve and 1.5 mg/L for the less sensitive curve."
+#| fig-alt: "Two rising curves share a dotted ceiling labeled 80%. At 40% inhibition, guides connect the marked points to concentrations of 0.5 mg/L on the solid curve and 1.5 mg/L on the dashed curve."
 #| fig-width: 7
 #| fig-height: 4.5
 par(bg = "white")
-plot(concentration_range, inhibition, type = "l", lwd = 2, col = "#176b82",
-     ylim = c(0, 80), xlab = "Concentration (mg/L)",
+ec50_values <- c(ec50, ec50_less_sensitive)
+curve_colors <- c("#176b82", "#b45309")
+half_max <- imax / 2
+
+plot(concentration_range, inhibition, type = "n",
+     ylim = c(0, 1.08 * imax), xlab = "Concentration (mg/L)",
      ylab = "Biomarker inhibition (%)")
+segments(0, half_max, max(ec50_values), half_max, col = "grey65", lty = 3)
+segments(ec50_values, 0, ec50_values, half_max, col = "grey65", lty = 3)
+lines(concentration_range, inhibition, lwd = 2, col = curve_colors[1])
 lines(concentration_range, inhibition_less_sensitive,
-      lwd = 2, lty = 2, col = "#b45309")
+      lwd = 2, lty = 2, col = curve_colors[2])
+points(ec50_values, rep(half_max, length(ec50_values)), pch = 19, col = curve_colors)
 abline(h = imax, lty = 3)
-legend("bottomright", c("EC50: 0.5 mg/L", "EC50: 1.5 mg/L"),
-       col = c("#176b82", "#b45309"), lty = c(1, 2), lwd = 2, bty = "n")
+text(max(concentration_range), 1.04 * imax, sprintf("Shared maximum (%g%%)", imax),
+     adj = c(1, 0.5), cex = 0.85)
+legend("bottomright", sprintf("EC50: %g mg/L", ec50_values),
+       col = curve_colors, lty = c(1, 2), lwd = 2, bty = "n")
 ```
 
 The same concentration can produce different effects if sensitivity differs. A lower $EC_{50}$ means greater potency within this model; it does not imply a greater maximum effect.
